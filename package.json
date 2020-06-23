@@ -1,5 +1,5 @@
 {
-  "name": "@agustriadji/hrms_core_function",
+  "name": "hrmscorefunction",
   "version": "1.0.0",
   "description": "Ini adalah kumpulan beberapa lib untuk hrms\r # Setup : \r ```\r npm i hrms_corefunction\r ```",
   "main": "index.js",
