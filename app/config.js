@@ -27,7 +27,7 @@ module.exports = {
 		port 		: ENV.DB_PORT 		|| "3306",
 		user 		: ENV.DB_USER 		|| "root",
 		password	: ENV.DB_PASSWORD 	|| "",
-		database 	: '',
+		database 	: 'test',
 	},
 };
 
