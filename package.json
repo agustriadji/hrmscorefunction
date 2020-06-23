@@ -1,0 +1,40 @@
+{
+  "name": "hrms_core_function",
+  "version": "0.0.1",
+  "description": "Kumpulan lib",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js",
+    "dev": "npm i && index.js",
+    "lint": "eslint .",
+    "release": "standard-version",
+    "start": "node index.js",
+    "format": "npx prettier --write \"**/*.js\""
+  },
+  "author": "agustriadji",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "async": "^3.2.0",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "compression": "^1.7.4",
+    "js-beautify": "^1.10.3",
+    "moment": "^2.27.0",
+    "mysql2": "^2.1.0",
+    "prettier": "^1.19.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agustriadji/hrms_core_function.git"
+  },
+  "keywords": [
+    "hrms",
+    "function_core"
+  ],
+  "bugs": {
+    "url": "https://github.com/agustriadji/hrms_core_function/issues"
+  },
+  "homepage": "https://github.com/agustriadji/hrms_core_function#readme"
+}
