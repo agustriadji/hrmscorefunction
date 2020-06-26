@@ -17,5 +17,13 @@ module.exports = {
           return message;
       });
     },
-  }
+  },
+  calculation: {
+    calculation: (req)=>{
+      controller.calculation(req, (err, message) => {
+          return console.log(err, message, 6660);
+          return message;
+      });
+    },
+  },
 }
