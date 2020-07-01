@@ -17,9 +17,9 @@ module.exports = (req, callback) => {
 			// validator.notif_lib_val(req.query, (err, value) => {
 			// 	if(err) return next(true, value);
 
-			// 	return next(null, value);
+				return next(null, {...req});
 			// });
-			return next(null, {});
+			// return next(null, {});
 		},
 		(value, next) => {
 
@@ -28,17 +28,25 @@ module.exports = (req, callback) => {
 			/**
 			 * EXAMPLE lib notif | tinggal panggil kayak manggil procedure
 			 */
+			// let val =  {
+			// 	ids: "360",
+			// 	type: "time",
+			// 	employee_id: "2006001",
+			// 	local_it: "local",
+			// 	user: "sup",
+			// 	from_type: "attendance"
+			// };
 			let val =  {
-				ids: "360",
-				type: "time",
-				employee_id: "2006001",
-				local_it: "local",
-				user: "sup",
-				from_type: "attendance"
+				ids: value.ids,
+				type: value.type,
+				employee_id: value.employee_id,
+				local_it: value.local_it,
+				user: value.user,
+				from_type: value.from_type
 			};
 			library.notif_lib(val, (err, res) => {
-				console.log(res, '==== OKE LURRRR');
-				return;
+				if (err) return next(true, err);
+				return next(null, res);
 			});
 		}
 	],

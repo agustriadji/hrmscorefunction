@@ -46,7 +46,7 @@ module.exports = (req, callback) => {
 			library.pool_update(value, (err, res) => {
 				// console.log("TESLA", res, err);
 				if (err) return next(true, err);
-				return next(null, true)
+				return next(null, res)
 			})
 		
         },
