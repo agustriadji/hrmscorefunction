@@ -10,4 +10,10 @@ module.exports = {
     __notif_get_sup_pro: require('./__notif_get_sup_pro'),
     __notif_get_swap_pro: require('./__notif_get_swap_pro'),
     __notif_insert_pool_req_pro: require('./__notif_insert_pool_req_pro'),
+    check_previllage_request_pro: require('./check_previllage_request_pro'),
+    create_pool_request_pro: require('./create_pool_request_pro'),
+    check_work_hours: require('./check_work_hours'),
+    check_supervisor_employee_pro: require('./check_supervisor_employee_pro'),
+    get_spv_hr_request_pro: require('./get_spv_hr_request_pro'),
+
 }
