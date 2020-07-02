@@ -140,41 +140,37 @@ module.exports = async (data, callback) => {
         (value, next) => {
             
             // get swap
-            procedure.__notif_get_swap_pro({emp_id: value.employee_id, ids: value.ids}, (err, res) => {
-                if(err) return next(true, res);
-				try {
-                    if (res[0]) {
-                        return next(null, {...value, swap: res[0]});
-                    }
-				} catch (error) {
-					return next(true, error);
-				}
-            });
+            if (value.swap) {
+                return next(null, {...value, swapx: [value.swap]});
+            } else {
+                return next(null, {...value, swapx: []});
+            }
+            // procedure.__notif_get_swap_pro({emp_id: value.employee_id, ids: value.ids}, (err, res) => {
+            //     if(err) return next(true, res);
+			// 	try {
+            //         if (res[0]) {
+            //             return next(null, {...value, swap: res[0]});
+            //         }
+			// 	} catch (error) {
+			// 		return next(true, error);
+			// 	}
+            // });
 
         },
         (value, next) => {
             
-            // set swapx
-            let swapx = [];
-            value.swap.forEach((el, index) => {
-                swapx.push({
-                    [el.swap_with]: 0,
+            // set swap
+            let swap = [];
+            if (value.swap) {
+                swap = [{
+                    [value.swap]: 0,
                     swap_stat:  0,
                     swap_date: '0000-00-00',
                     swap_time: '00:00',
                     read_stat: 0,
-                });
-                if (value.swap.length == (index + 1)) {
-                    swapx.push({
-                        [2014888]: 0,
-                        swap_stat:  0,
-                        swap_date: '0000-00-00',
-                        swap_time: '00:00',
-                        read_stat: 0,
-                    });
-                }
-            });
-            return next(null, {...value, swapx: swapx});
+                }];
+            }
+            return next(null, {...value, swap: swap});
 
         },
         (value, next) => {
@@ -630,24 +626,28 @@ module.exports = async (data, callback) => {
             return next(null, {...value, master, end, arr});
         },
         (value, next) => {
-
-            if (value.arr) {
-                procedure.__notif_command_center_pro(value.ids, (err, res) => {
-                    if(err) return next(true, res);
-                    try {
-                        if (res[0]) {
-                            return next(null, {...value, chat: res[0]});
-                        }
-                    } catch (error) {
-                        return next(true, error);
-                    }
-                });
-            } else {
-                return next(true, {data: [], message: 'your not allowed to request.'});
-            }
+            
+            return next(null, { ...value, chat: [] });
+            // if (value.arr) {
+            //     procedure.__notif_command_center_pro(value.ids, (err, res) => {
+            //         if(err) return next(true, res);
+            //         try {
+            //             if (res[0]) {
+            //                 return next(null, {...value, chat: res[0]});
+            //             }
+            //         } catch (error) {
+            //             return next(true, error);
+            //         }
+            //     });
+            // } else {
+            //     return next(true, {data: [], message: 'your not allowed to request.'});
+            // }
 
         },
         (value, next) => {
+
+            console.log(value, '==== NOTIFFFFFF');
+            return;
 
             let chatID = [];
 
