@@ -5,8 +5,10 @@ const path       	= require('path');
 
 module.exports = {
   notifLib: (req, callback)=>{
-    controller.test_lab_ctrl(req, message => {
-      return message;
+    return new Promise((resolve, reject) => {
+      controller.test_lab_ctrl(req, message => {
+        return resolve(message);
+      });
     })
   },
   pool_update: (req, callback)=>{
