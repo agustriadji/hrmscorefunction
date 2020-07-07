@@ -139,16 +139,31 @@ module.exports = async (data, callback) => {
                 // console.log(value, '=== WOHIHIHFIHF');
                 // return;
                 // SET SWAPX
-                let swapx  = [
-                    {
-                        "2014888": 0,
-                        "swap_stat": 0,
-                        "swap_date": "0000-00-00",
-                        "swap_time": "00:00",
-                        "read_stat": 0
-                    }
-                ];
-                let swapx_comp = ['2014888'];
+                let swapx;
+                let swapx_comp;
+                if (value._swap == null) {
+                    swapx = [
+                        {
+                            "2014888": 0,
+                            swap_stat: 0,
+                            swap_date: "0000-00-00",
+                            swap_time: "00:00",
+                            read_stat: 0,
+                        },
+                    ];
+                    swapx_comp = ["2014888"];
+                } else {
+                    swapx = [
+                        {
+                            [value._swap]: 0,
+                            swap_stat: 0,
+                            swap_date: "0000-00-00",
+                            swap_time: "00:00",
+                            read_stat: 0,
+                        },
+                    ];
+                    swapx_comp = [`${value._swap}`];
+                }
                 return next(null, { ...value, swapx: swapx, swapx_comp: swapx_comp });
             },
             (value, next) => {
