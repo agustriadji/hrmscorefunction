@@ -12,7 +12,12 @@ module.exports = async (data, callback) => {
 	 * 1. Check id is int
 	 * 2. Check id is available in table
 	 */
+    
     return new Promise((resolve, reject) => {
+        // updated code
+        let requestor = null;
+        if(data._user === undefined) data._user = null;
+        
         async.waterfall([
             (next) => {
                 //user =  hr /supervisor ? regular employee no needed it
@@ -21,12 +26,13 @@ module.exports = async (data, callback) => {
                         hr: [],
                         ...data
                     };
+
                     const _check_su = await database.promise().query(`select  * from  view_nonactive_login where employee_id  =  '${val._employee_id}'  and lower(role_name) =   'superuser'  `);
                     const _supervisorx = await database.promise().query(`select * from emp_supervisor where supervisor =  '${val._employee_id}' `);
                     const _emp_x = await database.promise().query(`select * from view_nonactive_login where employee_id  =   '${val._employee_id}' and (lower(role_name) = 'regular employee user' or  lower(role_name) = 'user') `);
                     const _hrx =  await database.promise().query(`select employee_id from  ldap, role where ldap.role_id = role.role_id and (lower(role.role_name) like '%human%' or  '%human resource%' or '%hr%')`);
-                    const _subx = await database.promise().query(`select subordinate from emp_subordinate where employee_id = '${val._employee_id}'`);
-                    // const _swapx = `select swap_with from att_swap_shift where employee_id = '${val._employee_id}' and swap_id = (select request_id from att_schedule_request where employee_id='${val._employee_id}' and id = ids and type_id = 6 order by id desc limit 1 )`;
+                    //const _subx = await database.promise().query(`select subordinate from emp_subordinate where employee_id = '${val._employee_id}'`);
+                    const _subx = val._ids == undefined ? [] : await database.promise().query(`select swap_with from att_swap_shift where employee_id = '${val._employee_id}' and swap_id = (select request_id from att_schedule_request where employee_id='${val._employee_id}' and id = ${val._ids} and type_id = 6 order by id desc limit 1 )`);
                     
                     return next(null, {
                         ...val,
@@ -34,9 +40,62 @@ module.exports = async (data, callback) => {
                         __supervisorx: _supervisorx[0],
                         __emp_x: _emp_x[0],
                         __hrx: _hrx[0],
-                        __subx: _subx[0],
+                        __subx: _subx.length == 0 ? [] : _subx[0],
                     });
                 })();
+            },
+            (value, next) => {
+                // console.log(value, '=== soehaifhidfhdifh');
+                // return;
+                // SET SUPX
+                let supx = [
+                    {
+                        [2014888]: 0,
+                        sup_stat:  0,
+                        sup_date: '0000-00-00',
+                        sup_time: '00:00',
+                        read_stat: 0,
+                    }
+                ];
+                let supx_comp = ['2014888'];
+                if (value.__supervisorx.length > 0) {
+                    value.__supervisorx.map((el, index) => {
+                        let jsons = {
+                            [el.supervisor]: 0,
+                            sup_stat: 0,
+                            sup_date: '0000-00-00',
+                            sup_time: '00:00',
+                            read_stat: 0,
+                        };
+
+                        // updated code
+                        if(value._user && value._user !== value._employee_id){
+                            const cekHR = _hrx[0].findIndex((str)=>{return str.employee_id == value._user;});
+                            const cekSPV = _supervisorx[0].findIndex((str)=>{return str.employee_id == value._user;});
+                            if( cekSPV > 1 || (cekSPV > -1 && cekHR > -1)){
+                                requestor = 'sup';
+                                const datetime = new Date().toISOString().split('T');
+                                const dates = datetime[0];
+                                const times = datetime[1].substring(0,5);
+                                jsons = {
+                                    [el.supervisor]: 1,
+                                    sup_stat: 1,
+                                    sup_date: dates.split('T')[0],
+                                    sup_time: times,
+                                    read_stat: 1,
+                                }
+                            }
+                        }
+                        supx.push(jsons);
+                        
+                        supx_comp.push(el.supervisor);
+                        if (value.__supx.length == (index + 1)) {
+                            return next(null, { ...value, supx: supx, supx_comp: supx_comp });
+                        }
+                    });
+                } else {
+                    return next(null, { ...value, supx: supx, supx_comp: supx_comp });
+                }
             },
             (value, next) => {
                 // console.log(value.__hrx.length, '=== OKE LUERR');
@@ -54,13 +113,36 @@ module.exports = async (data, callback) => {
                 let hrx_comp = ['2014888'];
                 if (value.__hrx.length > 0) {
                     value.__hrx.map((el, index) => {
-                        hrx.push({
+                        let jsons = {
                             [el.employee_id]: 0,
-                            hr_stat:  0,
+                            hr_stat: 0,
                             hr_date: '0000-00-00',
                             hr_time: '00:00',
                             read_stat: 0,
-                        });
+                        };
+                        
+                        // updated code
+                        if(value._user && value._user !== value._employee_id){
+                            const cekHR = value.__hrx.findIndex((str)=> str.employee_id == value._user );
+                            const cekSPV = value.__supervisorx.findIndex((str) =>  str.employee_id == value._user);
+                            
+                            if(cekHR > -1){
+                                if(requestor != 'sup'){
+                                    requestor = 'hr';
+                                    const datetime = new Date().toISOString().split('T');
+                                    const dates = datetime[0];
+                                    const times = datetime[1].substring(0,5);
+                                    jsons = {
+                                        [el.employee_id]: 1,
+                                        hr_stat: 1,
+                                        hr_date: dates.split('T')[0],
+                                        hr_time: times,
+                                        read_stat: 1,
+                                    }
+                                }
+                            }
+                        }
+                        hrx.push(jsons);
                         hrx_comp.push(el.employee_id);
                         if (value.__hrx.length == (index + 1)) {
                             return next(null, { ...value, hrx: hrx, hrx_comp: hrx_comp });
@@ -84,6 +166,7 @@ module.exports = async (data, callback) => {
                     }
                 ];
                 let subx_comp = ['2014888'];
+                
                 if (value.__subx.length > 0) {
                     value.__subx.map((el, index) => {
                         subx.push({
@@ -102,38 +185,6 @@ module.exports = async (data, callback) => {
                     return next(null, { ...value, subx: subx, subx_comp: subx_comp });
                 }
 
-            },
-            (value, next) => {
-                // console.log(value, '=== soehaifhidfhdifh');
-                // return;
-                // SET SUPX
-                let supx = [
-                    {
-                        [2014888]: 0,
-                        sup_stat:  0,
-                        sup_date: '0000-00-00',
-                        sup_time: '00:00',
-                        read_stat: 0,
-                    }
-                ];
-                let supx_comp = ['2014888'];
-                if (value.__supervisorx.length > 0) {
-                    value.__supervisorx.map((el, index) => {
-                        supx.push({
-                            [el.supervisor]: 0,
-                            sup_stat: 0,
-                            sup_date: "0000-00-00",
-                            sup_time: "00:00",
-                            read_stat: 0,
-                        });
-                        supx_comp.push(el.supervisor);
-                        if (value.__supx.length == (index + 1)) {
-                            return next(null, { ...value, supx: supx, supx_comp: supx_comp });
-                        }
-                    });
-                } else {
-                    return next(null, { ...value, supx: supx, supx_comp: supx_comp });
-                }
             },
             (value, next) => {
                 // console.log(value, '=== WOHIHIHFIHF');
@@ -590,7 +641,12 @@ module.exports = async (data, callback) => {
                         }
                     }
                 }
-
+                
+                // updated code
+                if(requestor){
+                    end[requestor_approve] = 'x';
+                    end['employee_requestor'] = [ value._user, requestor ];
+                }
                 let new_arr = {
                     ...arr,
                     requestor_stat: [{[value._employee_id]: 0}],
@@ -617,3 +673,4 @@ module.exports = async (data, callback) => {
         });
 	});
 };
+

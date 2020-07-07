@@ -16,693 +16,604 @@ module.exports = async (data, callback) => {
         async.waterfall([
             (next) => {
                 //user =  hr /supervisor ? regular employee no needed it
-                let val = {
-                    hr: [],
-                    ...data
-                };
-                procedure.__notif_get_hr_pro(null, (err, res) => {
-                    if(err) return next(true, res);
-                    try {
-                        if (res[0]) {
-                            return next(null, {...val, hr: res[0]});
-                        }
-                    } catch (error) {
-                        return next(true, error);
-                    }
-                });
-                
+                (async function () {
+                    let val = {
+                        hr: [],
+                        ...data
+                    };
+                    const _check_su = await database.promise().query(`select  * from  view_nonactive_login where employee_id  =  '${val._employee_id}'  and lower(role_name) =   'superuser'  `);
+                    const _supervisorx = await database.promise().query(`select * from emp_supervisor where supervisor =  '${val._employee_id}' `);
+                    const _emp_x = await database.promise().query(`select * from view_nonactive_login where employee_id  =   '${val._employee_id}' and (lower(role_name) = 'regular employee user' or  lower(role_name) = 'user') `);
+                    const _hrx =  await database.promise().query(`select employee_id from  ldap, role where ldap.role_id = role.role_id and (lower(role.role_name) like '%human%' or  '%human resource%' or '%hr%')`);
+                    const _subx = await database.promise().query(`select subordinate from emp_subordinate where employee_id = '${val._employee_id}'`);
+                    // const _swapx = `select swap_with from att_swap_shift where employee_id = '${val._employee_id}' and swap_id = (select request_id from att_schedule_request where employee_id='${val._employee_id}' and id = ids and type_id = 6 order by id desc limit 1 )`;
+                    
+                    return next(null, {
+                        ...val,
+                        __check_su: _check_su[0],
+                        __supervisorx: _supervisorx[0],
+                        __emp_x: _emp_x[0],
+                        __hrx: _hrx[0],
+                        __subx: _subx[0],
+                    });
+                })();
             },
             (value, next) => {
-                
-                // set hrx
-                let hrx = [];
-                value.hr.forEach((el, index) => {
-                    hrx.push({
-                        [el.employee_id]: 0,
-                        sup_stat:  0,
-                        sup_date: '0000-00-00',
-                        sup_time: '00:00',
-                        read_stat: 0,
-                    });
-                    if (value.hr.length == (index + 1)) {
+                // console.log(value.__hrx.length, '=== OKE LUERR');
+                // return;
+                // SET HRX
+                let hrx  = [
+                    {
+                    "2014888": 0,
+                    "hr_stat": 0,
+                    "hr_date": "0000-00-00",
+                    "hr_time": "00:00",
+                    "read_stat": 0
+                    }
+                ];
+                let hrx_comp = ['2014888'];
+                if (value.__hrx.length > 0) {
+                    value.__hrx.map((el, index) => {
                         hrx.push({
-                            [2014888]: 0,
-                            sup_stat:  0,
-                            sup_date: '0000-00-00',
-                            sup_time: '00:00',
+                            [el.employee_id]: 0,
+                            hr_stat:  0,
+                            hr_date: '0000-00-00',
+                            hr_time: '00:00',
                             read_stat: 0,
                         });
-                    }
-                })
-                return next(null, {...value, hrx: hrx});
-
-            },
-            (value, next) => {
-                
-                // get sub
-                procedure.__notif_get_sub_pro(value.employee_id, (err, res) => {
-                    if(err) return next(true, res);
-                    try {
-                        if (res[0]) {
-                            return next(null, {...value, sub: res[0]});
+                        hrx_comp.push(el.employee_id);
+                        if (value.__hrx.length == (index + 1)) {
+                            return next(null, { ...value, hrx: hrx, hrx_comp: hrx_comp });
                         }
-                    } catch (error) {
-                        return next(true, error);
-                    }
-                });
-
-            },
-            (value, next) => {
-
-                // set subx
-                let subx = [];
-                value.sub.forEach((el, index) => {
-                    subx.push({
-                        [el.subordinate]: 0,
-                        swap_stat:  0,
-                        swap_date: '0000-00-00',
-                        swap_time: '00:00',
-                        read_stat: 0,
                     });
-                    if (value.sub.length == (index + 1)) {
+                } else {
+                    return next(null, { ...value, hrx: hrx, hrx_comp: hrx_comp });
+                }
+            },
+            (value, next) => {
+                // console.log(value, '=== OKE WOYy');
+                // return;
+                // SET SUBX
+                let subx  = [
+                    {
+                        "2014888": 0,
+                        "swap_stat": 0,
+                        "swap_date": "0000-00-00",
+                        "swap_time": "00:00",
+                        "read_stat": 0
+                    }
+                ];
+                let subx_comp = ['2014888'];
+                if (value.__subx.length > 0) {
+                    value.__subx.map((el, index) => {
                         subx.push({
-                            [2014888]: 0,
-                            swap_stat:  0,
-                            swap_date: '0000-00-00',
-                            swap_time: '00:00',
+                            [el.subordinate]: 0,
+                            swap_stat: 0,
+                            swap_date: "0000-00-00",
+                            swap_time: "00:00",
                             read_stat: 0,
                         });
-                    }
-                });
-
-                return next(null, {...value, subx: subx});
-
-            },
-            (value, next) => {
-                
-                // get sup
-                procedure.__notif_get_sup_pro(value.employee_id, (err, res) => {
-                    if(err) return next(true, res);
-                    try {
-                        if (res[0]) {
-                            return next(null, {...value, sup: res[0]});
+                        subx_comp.push(el.subordinate);
+                        if (value.__subx.length == (index + 1)) {
+                            return next(null, { ...value, subx: subx, subx_comp: subx_comp });
                         }
-                    } catch (error) {
-                        return next(true, error);
-                    }
-                });
+                    });
+                } else {
+                    return next(null, { ...value, subx: subx, subx_comp: subx_comp });
+                }
 
             },
             (value, next) => {
-                
-                // set supx
-                let supx = [];
-                value.sup.forEach((el, index) => {
-                    supx.push({
-                        [el.supervisor]: 0,
+                // console.log(value, '=== soehaifhidfhdifh');
+                // return;
+                // SET SUPX
+                let supx = [
+                    {
+                        [2014888]: 0,
                         sup_stat:  0,
                         sup_date: '0000-00-00',
                         sup_time: '00:00',
                         read_stat: 0,
-                    });
-                    if (value.sup.length == (index + 1)) {
+                    }
+                ];
+                let supx_comp = ['2014888'];
+                if (value.__supervisorx.length > 0) {
+                    value.__supervisorx.map((el, index) => {
                         supx.push({
-                            [2014888]: 0,
-                            sup_stat:  0,
-                            sup_date: '0000-00-00',
-                            sup_time: '00:00',
+                            [el.supervisor]: 0,
+                            sup_stat: 0,
+                            sup_date: "0000-00-00",
+                            sup_time: "00:00",
                             read_stat: 0,
                         });
-                    }
-                });
-                return next(null, {...value, supx: supx});
-
-            },
-            (value, next) => {
-                
-                // get swap
-                if (value.swap) {
-                    return next(null, {...value, swapx: [value.swap]});
+                        supx_comp.push(el.supervisor);
+                        if (value.__supx.length == (index + 1)) {
+                            return next(null, { ...value, supx: supx, supx_comp: supx_comp });
+                        }
+                    });
                 } else {
-                    return next(null, {...value, swapx: []});
+                    return next(null, { ...value, supx: supx, supx_comp: supx_comp });
                 }
-                // procedure.__notif_get_swap_pro({emp_id: value.employee_id, ids: value.ids}, (err, res) => {
-                //     if(err) return next(true, res);
-                // 	try {
-                //         if (res[0]) {
-                //             return next(null, {...value, swap: res[0]});
-                //         }
-                // 	} catch (error) {
-                // 		return next(true, error);
-                // 	}
-                // });
-
             },
             (value, next) => {
-                
-                // set swap
-                let swap = [];
-                if (value.swap) {
-                    swap = [{
-                        [value.swap]: 0,
-                        swap_stat:  0,
-                        swap_date: '0000-00-00',
-                        swap_time: '00:00',
-                        read_stat: 0,
-                    }];
+                // console.log(value, '=== WOHIHIHFIHF');
+                // return;
+                // SET SWAPX
+                let swapx;
+                let swapx_comp;
+                if (value._swap == null) {
+                    swapx = [
+                        {
+                            "2014888": 0,
+                            swap_stat: 0,
+                            swap_date: "0000-00-00",
+                            swap_time: "00:00",
+                            read_stat: 0,
+                        },
+                    ];
+                    swapx_comp = ["2014888"];
+                } else {
+                    swapx = [
+                        {
+                            [value._swap]: 0,
+                            swap_stat: 0,
+                            swap_date: "0000-00-00",
+                            swap_time: "00:00",
+                            read_stat: 0,
+                        },
+                    ];
+                    swapx_comp = [`${value._swap}`];
                 }
-                return next(null, {...value, swap: swap});
-
+                return next(null, { ...value, swapx: swapx, swapx_comp: swapx_comp });
             },
             (value, next) => {
+                let master, end, arr;
 
-                // section if if if and if
-
-                let master;
-                let end;
-                let arr;
-
-                if (value.type == 'time') {
-                    if (value.local_it == 'local') {
-                        master = 'schedule';
-                        end = {
-                            hr: 1,
-                            emp: '0',
-                            sup: '0',
-                        };
-                        arr = {
-                            hr: value.hrx,
-                            sup: [],
-                            emp: [],
-                        };
-                    } else {
-                        master = 'schedule';
-                        end = {
-                            sup: 1,
-                            hr: '0',
-                            emp: '0',
-                        };
-                        arr = {
-                            sup: value.supx,
-                            hr: [],
-                            sup: [],
-                        };
-                    }
-                }
-
-                if (value.from_type == 'attendance') {
-                    if (value.type == 'over') {
-                        if (value.local_it == 'local') {
+                if (value._from_type == 'attendance') {
+                    if (value._type == 9) {
+                        if (value._local_it == 'local') {
                             master = 'schedule';
-                            end = {
-                                sup: 1,
-                                emp: 0,
-                                hr: 0,
+                            end = {hr: 1, swap: '0', sup: '0', hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                            arr = {
+                                hr: value.hrx,
+                                sup: [],
+                                swap: [],
+                                hrx_comp: value.hrx_comp,
+                                supx_comp: [],
+                                empx_comp: []
                             };
+                        } else {
+                            master = 'schedule';
+                            end = {sup: 1, hr: '0', swap: '0', hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
                                 sup: value.supx,
                                 hr: [],
-                                emp: [],
+                                swap: [],
+                                supx_comp: value.supx_comp,
+                                hrx_comp: [],
+                                swapx_comp: []
                             };
                         }
                     }
-                    if (value.type == 'under') {
-                        if (value.type == 'local') {
+                    if (value._type == 3) {
+                        if (value._local_it == 'local') {
                             master = 'schedule';
-                            end = {
-                                sup: 1,
-                                emp: 0,
-                                hr: 0,
-                            };
+                            end = {sup: 1, swap: '0', hr: '0', hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
                                 sup: value.supx,
                                 hr: [],
-                                emp: [],
+                                swap: [],
+                                supx_comp: value.supx_comp,
+                                hrx_comp: [],
+                                swapx_comp: []
                             };
                         }
                     }
-                    if (value.type == 'late' || value.type == 'early') {
-                        if (value.local_it == 'local') {
+                    if (value._type == 4) {
+                        if (value._local_it == 'local') {
                             master = 'schedule';
-                            end = {
-                                sup: 1,
-                                hr: 0,
-                                emp: 0,
+                            end = {sup: 1, swap: '0', hr: '0', hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                            arr = {
+                                sup: value.supx,
+                                hr: [],
+                                swap: [],
+                                supx_comp: value.supx_comp,
+                                hrx_comp: [],
+                                swapx_comp: []
                             };
+                        }
+                    }
+                    if (value._type == 7 || value._type == 8) {
+                        if (value._local_it == 'local') {
+                            master = 'schedule';
+                            end = {sup: 1, hr: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
                                 sup: value.supx,
                                 hr: value.hrx,
-                                emp: [],
+                                swap: [],
+                                supx_comp: value.supx_comp,
+                                hrx_comp: value.hrx_comp,
+                                swapx_comp: []
                             };
                         }
                     }
-                    if (value.type == 'ob') {
+                    if (value._type == 2) {
                         master = 'schedule';
-                        end = {
-                            sup: 1,
-                            hr: 0,
-                            emp: 0,
+                        end = {sup: 1, hr: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                        arr = {
+                            sup: value.supx,
+                            hr: value.hrx,
+                            swap: [],
+                            supx_comp: value.supx_comp,
+                            hrx_comp: value.hrx_comp,
+                            swapx_comp: []
                         };
+                    }
+                    if (value._type == 1) {
+                        master = 'schedule';
+                        end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                         arr = {
                             sup: value.supx,
                             hr: [],
-                            emp: [],
+                            swap: [],
+                            supx_comp: value.supx_comp,
+                            hrx_comp: [],
+                            swapx_comp: []
                         };
                     }
-                    if (value.type == 'train') {
-                        master = 'schedule';
-                        end = {
-                            sup: 1,
-                            hr: 0,
-                            emp: 0,
-                        };
-                        arr = {
-                            sup: value.supx,
-                            hr: [],
-                            emp: [],
-                        };
-                    }
-                    if (value.type = 'change') {
-                        if (value.user == 'sup') {
+                    if (value._type == 5) {
+                        if (value._user == 'sup') {
                             master = 'schedule';
-                            end = {
-                                emp: 1,
-                                hr: 0,
-                                emp: 0,
-                            };
+                            end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
-                                emp: value.subx,
+                                swap: value.subx,
                                 sup: [],
                                 hr: [],
+                                swapx_comp: value.subx_comp,
+                                supx_comp: [],
+                                hrx_comp: [],
                             };
                         } else {
                             master = 'schedule';
-                            end = {
-                                sup: 1,
-                                hr: 0,
-                                emp: 0,
-                            };
+                            end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
                                 sup: value.supx,
+                                swap: [],
                                 hr: [],
-                                emp: [],
+                                supx_comp: value.supx_comp,
+                                hrx_comp: [],
+                                swapx_comp: []
                             };
                         }
                     }
-                    if (value.type == 'swap') {
-                        if (value.type == 'local') {
-                            master = 'schedule';
-                            end = {
-                                emp: 1,
-                                sup: 2,
-                                emp: 0,
-                            };
-                            arr = {
-                                emp: value.swapx,
-                                sup: value.supx,
-                                hr: [],
-                            };
+                    if (value._type == 6) {
+                        if (value._local_it == 'local') {
+                            if (value._supervisorx) {
+                                master = 'schedule';
+                                end = {swap: 1, sup: 0, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                                arr = {
+                                    swap: value.swapx,
+                                    sup: [],
+                                    hr: [],
+                                    swapx_comp: value.supx_comp,
+                                    supx_comp: [],
+                                    hrx_comp: [],
+                                };
+                            } else {
+                                master = 'schedule';
+                                end = {swap: 1, sup: 2, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                                arr = {
+                                    swap: value.swapx,
+                                    sup: value.supx,
+                                    hr: [],
+                                    swapx_comp: value.supx_comp,
+                                    supx_comp: value.supx_comp,
+                                    hrx_comp: [],
+                                };
+                            }
                         }
                     }
                 } else {
-
-                    // leave request
-                    if (value.type == 'vacation') {
-                        if (value.local_it) {
+                    if (value._type == 2) {
+                        if (value._local_it == 'local') {
                             master = 'leave';
-                            end = {
-                                hr: 1,
-                                sup: 2,
-                                emp: 0,
-                            };
+                            end = {hr: 1, sup: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
                                 hr: value.hrx,
                                 sup: value.supx,
-                                emp: [],
+                                swap: [],
+                                hrx_comp: value.hrx,
+                                supx_comp: value.supx_comp,
+                                swapx_comp: [],
                             };
                         } else {
                             master = 'leave';
-                            end = {
-                                sup: 1,
-                                hr: 0,
-                                emp: 0,
-                            };
+                            end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
                                 sup: value.supx,
-                                emp: [],
+                                swap: [],
                                 hr: [],
+                                supx_comp: value.supx_comp,
+                                swapx_comp: [],
+                                hrx_comp: [],
                             };
                         }
                     }
-                    if (value.type == 'ADO') {
+                    if (value._type == 10) {
                         master = 'leave';
-                        end = {
-                            hr: 1,
-                            sup: 2,
-                            emp: 0,
-                        };
+                        end = {hr: 1, sup: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                         arr = {
                             hr: value.hrx,
                             sup: value.supx,
-                            emp: [],
+                            swap: [],
+                            hrx_comp: value.hrx_comp,
+                            supx_comp: value.supx_comp,
+                            swapx_comp: [],
                         };
                     }
-                    if (value.type == 'enhance') {
-                        if (value.local_it) {
-                            master = 'leave';
-                            end = {
-                                hr: 1,
-                                sup: 2,
-                                emp: 0,
-                            };
+                    if (value._type == 3) {
+                        master = 'leave';
+                        if (value._local_it == 'local') {
+                            end = {hr: 1, sup: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
                                 hr: value.hrx,
                                 sup: value.supx,
-                                emp: [],
+                                swap: [],
+                                hrx_comp: value.hrx_comp,
+                                supx_comp: value.supx_comp,
+                                swapx_comp: [],
                             };
                         }
                     }
-                    if (value.type == 'birth') {
+                    if (value._type == 1) {
                         master = 'leave';
-                        end = {
-                            hr: 1,
-                            sup: 0,
-                            emp: 0,
-                        };
+                        if (value._local_it == 'local') {
+                            end = {hr: 1, sup: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                            arr = {
+                                hr: value.hrx,
+                                sup: [],
+                                swap: [],
+                                hrx_comp: value.hrx_comp,
+                                supx_comp: [],
+                                swapx_comp: [],
+                            };
+                        }
+                    }
+                    if (value._user == 'hr' && value._type == 4) {
+                        if (value._local_it == 'local') {
+                            master = 'leave';
+                            end = {sup: 1, swap: 0, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                            arr = {
+                                sup: value.sup,
+                                hr: [],
+                                swap: [],
+                                supx_comp: value.supx_comp,
+                                hrx_comp: [],
+                                swapx_comp: [],
+                            };
+                        }
+                    }
+                    if (value._type == 4 && value._local_it == 'local') {
+                        master = 'leave';
+                        end = {hr: 1, sup: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                         arr = {
                             hr: value.hrx,
-                            sup: [],
-                            emp: [],
+                            sup: value.supx,
+                            swap: [],
+                            hrx_comp: value.hrx_comp,
+                            supx_comp: value.supx_comp,
+                            swapx_comp: [],
                         };
                     }
-                    if (value.user = 'hr' && value.type == 'sick' && value.local_it == 'local') {
+                    if (value._type == 4 && value._local_it == 'expat') {
                         master = 'leave';
-                        end = {
-                            sup: 1,
-                            hr: 0,
-                            emp: 0,
-                        };
+                        end = {sup: 1, swap: 0, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                         arr = {
                             sup: value.supx,
                             hr: [],
-                            emp: [],
+                            swap: [],
+                            supx_comp: value.supx_comp,
+                            hrx_comp: [],
+                            swapx_comp: [],
                         };
                     }
-                    if (value.type == 'sick' && value.local_it == 'local') {
+                    if (value._type == 5) {
                         master = 'leave';
-                        end = {
-                            hr: 1,
-                            sup: 2,
-                            emp: 0,
-                        };
-                        arr = {
-                            hr: value.hrx,
-                            sup: value.supx,
-                            emp: [],
-                        };
-                    }
-                    if (value.type == 'sick' && value.local_it != 'expat') {
-                        master = 'leave';
-                        end = {
-                            sup: 1,
-                            emp: 2,
-                            hr: 0,
-                        };
-                        arr = {
-                            sup: value.supx,
-                            hr: [],
-                            emp: [],
-                        };
-                    }
-                    if (value.type == 'maternity') {
-                        if (value.user == 'hr') {
-                            if (value.local_it == 'local') {
-                                master = 'leave';
-                                end = {
-                                    hr: 1,
-                                    emp: 0,
-                                    sup: 0,
-                                };
+                        if (value._user == 'hr') {
+                            if (value._local_it == 'local') {
+                                end = {hr: 1, swap: 0, sup: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                                 arr = {
                                     hr: value.hrx,
                                     sup: [],
-                                    emp: [],
+                                    swap: [],
+                                    hrx_comp: value.hrx_comp,
+                                    supx_comp: [],
+                                    swapx_comp: [],
                                 };
                             }
                         } else {
-                            if (value.local_it == 'expat') {
-                                master = 'leave';
-                                end = {
-                                    sup: 1,
-                                    hr: 0,
-                                    emp: 0,
-                                };
+                            if (value._local_it == 'expat') {
+                                end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                                 arr = {
                                     sup: value.supx,
                                     hr: [],
-                                    emp: [],
+                                    swap: [],
+                                    supx_comp: value.supx_comp,
+                                    hrx_comp: [],
+                                    swapx_comp: [],
                                 };
                             }
                         }
                     }
-                    if (value.type == 'paternity') {
-                        if (value.local_it == 'local') {
-                            master = 'leave';
-                            end = {
-                                sup: 1,
-                                hr: 2,
-                                emp: 0,
-                            };
+                    if (value._type == 6) {
+                        master = 'leave';
+                        if (value._local_it == 'local') {
+                            end = {sup: 1, hr: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
                                 sup: value.supx,
                                 hr: value.hrx,
-                                emp: [],
+                                swap: [],
+                                supx_comp: value.supx_comp,
+                                hrx_comp: value.hrx_comp,
+                                swapx_comp: [],
                             };
                         } else {
-                            master = 'leave';
-                            end = {
-                                sup: 1,
-                                hr: 0,
-                                emp: 0,
-                            };
+                            end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
                                 sup: value.supx,
                                 hr: [],
-                                emp: [],
+                                swap: [],
+                                supx_comp: value.supx_comp,
+                                hrx_comp: [],
+                                swapx_comp: [],
                             };
                         }
                     }
-                    if (value.type == 'breavement') {
-                        if (value.user == 'hr') {
-                            if (value.local_it == 'local') {
-                                master = 'leave';
-                                end = {
-                                    sup: 1,
-                                    hr: 0,
-                                    emp: 0,
-                                };
+                    if (value._type == 7) {
+                        master = 'leave';
+                        if (value._user == 'hr') {
+                            if (value._local_it == 'local') {
+                                end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                                 arr = {
                                     sup: value.supx,
                                     hr: [],
-                                    emp: [],
+                                    swap: [],
+                                    supx_comp: value.supx_comp,
+                                    hrx_comp: [],
+                                    swapx_comp: [],
                                 };
                             }
                         } else {
-                            if (value.local_it == 'local') {
-                                master = 'leave';
-                                end = {
-                                    sup: 1,
-                                    hr: 2,
-                                    emp: 0,
-                                };
+                            if (value._local_it == 'local') {
+                                end = {sup: 1, hr: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                                 arr = {
                                     sup: value.supx,
                                     hr: value.hrx,
-                                    emp: [],
+                                    swap: [],
+                                    supx_comp: value.supx,
+                                    hrx_comp: value.hrx,
+                                    swapx_comp: [],
                                 };
                             } else {
-                                master = 'leave';
-                                end = {
-                                    sup: 1,
-                                    hr: 0,
-                                    emp: 0,
-                                };
+                                end = {sup: 1, swap: 0, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                                 arr = {
                                     sup: value.supx,
-                                    hr: value.hrx,
-                                    emp: [],
+                                    hr: [],
+                                    swap: [],
+                                    supx_comp: value.supx_comp,
+                                    hrx_comp: [],
+                                    swapx_comp: [],
                                 };
                             }
                         }
                     }
-                    if (value.type == 'marriage') {
-                        if (value.local_it == 'local') {
-                            master = 'leave';
-                            end = {
-                                sup: 1,
-                                hr: 2,
-                                emp: 0,
-                            };
+                    if (value._type == 8) {
+                        master = 'leave';
+                        if (value._local_it == 'local') {
+                            end = {sup: 1, hr: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
                                 sup: value.supx,
                                 hr: value.hrx,
-                                emp: [],
+                                swap: [],
+                                supx_comp: value.supx_comp,
+                                hrx_comp: value.hrx_comp,
+                                swapx_comp: [],
                             };
                         } else {
-                            master = 'leave';
-                            end = {
-                                sup: 1,
-                                hr: 0,
-                                emp: 0,
-                            };
+                            end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
                                 sup: value.supx,
                                 hr: [],
-                                emp: [],
+                                swap: [],
+                                supx_comp: value.supx_comp,
+                                hrx_comp: [],
+                                swapx_comp: [],
                             };
                         }
                     }
-                    if (value.type == 'emergency') {
-                        if (value.user == 'hr') {
-                            if (value.local_it == 'local') {
-                                master = 'leave';
-                                end = {
-                                    sup: 1,
-                                    hr: 0,
-                                    emp: 0,
-                                };
-                                arr = {
-                                    hr: value.hrx,
-                                    sup: [],
-                                    emp: [],
-                                };
-                            }
+                    if (value._type == 11) {
+                        master = 'leave';
+                        if (value._local_it == 'local') {
+                            end = {sup: 1, hr: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                            arr = {
+                                sup: value.supx,
+                                hr: value.hrx,
+                                swap: [],
+                                supx_comp: value.supx,
+                                hrx_comp: value.hrx,
+                                swapx_comp: [],
+                            };
                         } else {
-                            if (value.local_it == 'local') {
-                                master = 'leave';
-                                end = {
-                                    sup: 1,
-                                    hr: 2,
-                                    emp: 0,
-                                };
-                                arr = {
-                                    hr: value.hrx,
-                                    sup: value.supx,
-                                    emp: [],
-                                };
-                            } else {
-                                master = 'leave';
-                                end = {
-                                    sup: 1,
-                                    hr: 0,
-                                    emp: 0,
-                                };
-                                arr = {
-                                    sup: value.supx,
-                                    hr: [],
-                                    emp: [],
-                                };
+                            end = {sup: 1, swap: 0, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                            arr = {
+                                sup: value.supx,
+                                hr: [],
+                                swap: [],
+                                supx_comp: value.supx,
+                                hrx_comp: [],
+                                swapx_comp: [],
+                            };
+                        }
+                    }
+                    if (value._type == 12) {
+                        master = 'leave';
+                        if (value._type == 12) {
+                            if (value._user == 'hr') {
+                                if (value._local_it == 'local') {
+                                    end = {sup: 0, swap: 0, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                                    arr = {
+                                        sup: value.supx,
+                                        hr: value.hrx,
+                                        swap: [],
+                                        supx_comp: value.supx_comp,
+                                        hrx_comp: value.hrx_comp,
+                                        swapx_comp: [],
+                                    };
+                                }
                             }
                         }
                     }
-                    if (value.type == 'suspension') {
-                        if (value.user == 'hr') {
-                            if (value.local_it == 'local') {
-                                master = 'leave';
-                                end = {
-                                    sup: 0,
-                                    hr: 0,
-                                    emp: 0,
-                                };
+                    if (value._type == 9) {
+                        master = 'leave';
+                        if (value.swapx) {
+                            if (value._local_it == 'local') {
+                                end = {sup: 1, hr: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                                 arr = {
                                     sup: value.supx,
                                     hr: value.hrx,
-                                    emp: [],
+                                    swap: [],
+                                    supx_comp: value.supx_comp,
+                                    hrx_comp: value.hrx_comp,
+                                    swapx_comp: [],
                                 };
                             }
                         }
                     }
                 }
 
-                return next(null, {...value, master, end, arr});
-            },
-            (value, next) => {
+                let new_arr = {
+                    ...arr,
+                    requestor_stat: [{[value._employee_id]: 0}],
+                    chat_id: [],
+                    req_flow: end,
+                    master: master,
+                    local_it: value._local_it
+                };
 
-                return next(null, { ...value, chat: [] });
-                // if (value.arr) {
-                //     procedure.__notif_command_center_pro(value.ids, (err, res) => {
-                //         if(err) return next(true, res);
-                //         try {
-                //             if (res[0]) {
-                //                 return next(null, {...value, chat: res[0]});
-                //             }
-                //         } catch (error) {
-                //             return next(true, error);
-                //         }
-                //     });
-                // } else {
-                //     return next(true, {data: [], message: 'your not allowed to request.'});
-                // }
-
-            },
-            (value, next) => {
-
+                let jsonData = JSON.stringify(new_arr);
                 
-                value.arr.requestor_stat = { [value.employee_id]: 0 };
-                value.arr.chat_id = [];
-                value.arr.master = value.master;
-                value.arr.req_flow = value.end;
-                
-                console.log(value, '==== OKE SIAPPP LUERRE MUAHHH');
-                return;
 
-                // console.log(value.master, json_arr, '==== NOTIFFFFFF');
-                // return;
-
-                let chatID = [];
-
-                if (value.chat) {
-                    value.chat.map((el, index) => {
-                        
-                        chatID[index] = { [el.id]: 'u' };
-                        if (value.chat.length == (index + 1)) {
-                            value.arr.requestor_stat = { [value.employee_id]: 0 };
-                            value.arr.chat_id = chatID;
-                            value.arr.req_flow = value.end;
-                            value.arr.master = value.master;
-
-                            let json_arr = JSON.stringify(value.arr);
-                            return next(null, {...value, json_arr});
-                        }
-                    });
-                }
+                return next(null, {...value, jsonData});
             },
-            // (value, next) => {
-
-            //     let val = {
-            //         employee_id: value.employee_id,
-            //         ids: value.ids,
-            //         json_arr: value.json_arr,
-            //     }
-            //     procedure.__notif_insert_pool_req_pro(val, (err, res) => {
-            //         if(err) return next(true, res);
-            //         try {
-            //             if (res[0][0].status == 'success') {
-            //                 return next(null, res[0][0].message);
-            //             }
-            //         } catch (error) {
-            //             return next(true, error);
-            //         }
-            //     });
-            // }
         ],(error, result) => {
             /**
              * handle error
              */
+            // return;
             if (error) {
-                return reject(result);
+                return callback(true, result);
             }
-            return resolve(result);
+            return callback(null, result);
         });
 	});
 };
