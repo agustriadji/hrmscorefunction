@@ -89,7 +89,7 @@ module.exports = async (data, callback) => {
                         supx.push(jsons);
                         
                         supx_comp.push(el.supervisor);
-                        if (value.__supx.length == (index + 1)) {
+                        if (value.__supervisorx.length == (index + 1)) {
                             return next(null, { ...value, supx: supx, supx_comp: supx_comp });
                         }
                     });
