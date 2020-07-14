@@ -41,13 +41,24 @@ module.exports = {
 ```
 
 # Cara pakai : 
+1. config set
+```
+mysql 	: {
+		host 		: ENV.DB_HOST 		|| "192.168.1.xx", // ip database
+		port 		: ENV.DB_PORT 		|| "3306",
+		user 		: ENV.DB_USER 		|| "root",
+		password	: ENV.DB_PASSWORD 	|| "yourpassword",
+		database 	: 'database', // DB
+	},
+```
 
-require dulu
+
+2. require dulu
 ```
 const library   = require('hrmscorefunction');
 ```
 
-cara panggil
+3. cara pakai
 ```
 let val_notif = {
     type: value.type,
