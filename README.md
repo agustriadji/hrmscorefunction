@@ -41,7 +41,7 @@ module.exports = {
 ```
 
 # Cara pakai : 
-1. config set
+1. config set di dalam libnya
 ```
 mysql 	: {
 		host 		: ENV.DB_HOST 		|| "192.168.1.xx", // ip database
