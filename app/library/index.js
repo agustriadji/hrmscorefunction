@@ -3,4 +3,5 @@ module.exports = {
     pool_update: require('./pool_update'),
     calculation: require('./calculation'),
     response: require('./response'),
+    notif_leave_only: require('./notif_leave_only'),
 }

@@ -70,8 +70,8 @@ module.exports = async (data, callback) => {
 
                         // updated code
                         if(value._user && value._user !== value._employee_id){
-                            const cekHR = _hrx[0].findIndex((str)=>{return str.employee_id == value._user;});
-                            const cekSPV = _supervisorx[0].findIndex((str)=>{return str.employee_id == value._user;});
+                            const cekHR = value.__hrx.findIndex((str)=>{return str.employee_id == value._user;});
+                            const cekSPV = value.__supervisorx.findIndex((str)=>{return str.employee_id == value._user;});
                             if( cekSPV > 1 || (cekSPV > -1 && cekHR > -1)){
                                 requestor = 'sup';
                                 const datetime = new Date().toISOString().split('T');

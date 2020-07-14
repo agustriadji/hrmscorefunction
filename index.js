@@ -11,6 +11,13 @@ module.exports = {
       });
     })
   },
+  notifLeaveOnly: (req, callback)=>{
+    return new Promise((resolve, reject) => {
+      controller.notif_leave_only_ctrl(req, message => {
+        return resolve(message);
+      });
+    })
+  },
   pool_update: (req, callback)=>{
     controller.pool_update(req, message => {
       return message;
