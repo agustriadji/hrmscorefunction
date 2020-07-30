@@ -495,8 +495,8 @@ module.exports = async (data, callback) => {
                           
                 // updated code
                 if(requestor){
-                    end['requestor_approve'] = 'x';
-                    end['employee_requestor'] = [ value._user, requestor ];
+                    end.requestor_approve = 'x';
+                    end.employee_requestor = [ value._user, requestor ];
                 }
                 let new_arr = {
                     ...arr,
