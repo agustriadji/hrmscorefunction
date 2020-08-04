@@ -461,9 +461,9 @@ module.exports = async (data, callback) => {
                 if (value._type == 12) {
                     master = 'leave';
                     if (value._type == 12) {
+                        end = {sup: 0, swap: 0, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                         if (value._user == 'hr') {
                             if (value._local_it == 'local') {
-                                end = {sup: 0, swap: 0, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                                 arr = {
                                     sup: value.supx,
                                     hr: value.hrx,

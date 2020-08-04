@@ -23,11 +23,11 @@ module.exports = {
 	 * @param	{string}	DB_PASSWORD
 	 */
 	mysql 	: {
-		host 		: ENV.DB_HOST 		|| "192.168.1.xx", // ip database
+		host 		: ENV.DB_HOST 		|| "192.168.1.12", // ip database
 		port 		: ENV.DB_PORT 		|| "3306",
 		user 		: ENV.DB_USER 		|| "root",
-		password	: ENV.DB_PASSWORD 	|| "yourpassword",
-		database 	: 'database', // DB
+		password	: ENV.DB_PASSWORD 	|| "asdf1234*",
+		database 	: 'db_hrms_prod', // DB
 	},
 };
 
