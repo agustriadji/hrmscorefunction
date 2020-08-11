@@ -42,7 +42,8 @@ module.exports = (req, callback) => {
 					_local_it: value.local_it,
 					_user: value.user,
 					_from_type: value.from_type,
-					_swap: value.swap
+					_swap: value.swap,
+					_user_login : value.user_login
 				};
 				// console.log(val, '==== SIAPPPPPPP');
 				

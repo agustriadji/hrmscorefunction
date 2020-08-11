@@ -16,9 +16,8 @@ module.exports = async (data, callback) => {
     return new Promise((resolve, reject) => {
         // updated code
         let requestor = null;
-        //if(data._user === undefined) data._user = null;
-        // _user = user input form
-        // _user_login = user_login
+        if(data._user === undefined) data._user = null;
+        
         async.waterfall([
             (next) => {
                 //user =  hr /supervisor ? regular employee no needed it
@@ -29,7 +28,7 @@ module.exports = async (data, callback) => {
                     };
 
                     const _check_su = await database.promise().query(`select  * from  view_nonactive_login where employee_id  =  '${val._employee_id}'  and lower(role_name) =   'superuser'  `);
-                    const _supervisorx = await database.promise().query(`select * from emp_supervisor where employee_id =  '${val._employee_id}' `);
+                    const _supervisorx = await database.promise().query(`select distinct * from emp_supervisor where supervisor =  '${val._employee_id}' `);
                     const _emp_x = await database.promise().query(`select * from view_nonactive_login where employee_id  =   '${val._employee_id}' and (lower(role_name) = 'regular employee user' or  lower(role_name) = 'user') `);
                     const _hrx =  await database.promise().query(`select employee_id from  ldap, role where ldap.role_id = role.role_id and (lower(role.role_name) like '%human%' or  '%human resource%' or '%hr%')`);
                     //const _subx = await database.promise().query(`select subordinate from emp_subordinate where employee_id = '${val._employee_id}'`);
@@ -70,17 +69,14 @@ module.exports = async (data, callback) => {
                         };
 
                         // updated code
-                        
-                        if(value._employee_id && value._employee_id !== value._user_login){
-                            // let cekHR = value.__hrx.findIndex((str)=>{return str.employee_id === value._user_login;});
-                            // let cekSPV = value.__supervisorx.findIndex((str)=>{return str.supervisor === value._user_login;});
-
-                            if(el.supervisor === value._user_login){
+                        if(value._user && value._user !== value._employee_id){
+                            const cekHR = value.__hrx.findIndex((str)=>{return str.employee_id == value._user;});
+                            const cekSPV = value.__supervisorx.findIndex((str)=>{return str.employee_id == value._user;});
+                            if( cekSPV > 1 || (cekSPV > -1 && cekHR > -1)){
                                 requestor = 'sup';
                                 const datetime = new Date().toISOString().split('T');
                                 const dates = datetime[0];
                                 const times = datetime[1].substring(0,5);
-                                //console.log((value._employee_id && value._employee_id !== value._user_login), value._employee_id, value._user_login, cekSPV, el.supervisor)
                                 jsons = {
                                     [el.supervisor]: 1,
                                     sup_stat: 1,
@@ -126,12 +122,12 @@ module.exports = async (data, callback) => {
                         };
                         
                         // updated code
-                        if(value._employee_id && value._employee_id !== value._user_login){
-                            // const cekHR = value.__hrx.findIndex((str)=> str.employee_id == value._user_login );
-                            // const cekSPV = value.__supervisorx.findIndex((str) =>  str.employee_id == value._user_login);
-                            if(value._user_login === '2014888'){
-                                requestor = 'su';
-                            }else if(requestor != 'sup' && el.employee_id === value._user_login){
+                        if(value._user && value._user !== value._employee_id){
+                            const cekHR = value.__hrx.findIndex((str)=> str.employee_id == value._user );
+                            const cekSPV = value.__supervisorx.findIndex((str) =>  str.employee_id == value._user);
+                            
+                            if(cekHR > -1){
+                                if(requestor != 'sup'){
                                     requestor = 'hr';
                                     const datetime = new Date().toISOString().split('T');
                                     const dates = datetime[0];
@@ -143,7 +139,7 @@ module.exports = async (data, callback) => {
                                         hr_time: times,
                                         read_stat: 1,
                                     }
-                                
+                                }
                             }
                         }
                         hrx.push(jsons);
@@ -194,9 +190,6 @@ module.exports = async (data, callback) => {
                 // console.log(value, '=== WOHIHIHFIHF');
                 // return;
                 // SET SWAPX
-                if(!requestor && value._employee_id != value._user_login){
-                    return next(true, 500);
-                }
                 let swapx;
                 let swapx_comp;
                 if (value._swap == null) {
@@ -285,16 +278,16 @@ module.exports = async (data, callback) => {
                             master = 'schedule';
                             end = {sup: 1, hr: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
-                                sup: value.supx,
+                                sup: /*value.supx*/[],
                                 hr: value.hrx,
                                 swap: [],
-                                supx_comp: value.supx_comp,
+                                supx_comp: /*value.supx_comp*/[],
                                 hrx_comp: value.hrx_comp,
                                 swapx_comp: []
                             };
                         }
                     }
-                    if (value._type == 2) { // training
+                    if (value._type == 2) {
                         master = 'schedule';
                         end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                         arr = {
@@ -306,7 +299,7 @@ module.exports = async (data, callback) => {
                             swapx_comp: []
                         };
                     }
-                    if (value._type == 1) { // official businness
+                    if (value._type == 1) {
                         master = 'schedule';
                         end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                         arr = {
@@ -347,13 +340,13 @@ module.exports = async (data, callback) => {
                         if (value._local_it == 'local') {
                             if (value._supervisorx) {
                                 master = 'schedule';
-                                end = {swap: 1, sup: 0, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                                end = {swap: 1, sup: 2, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                                 arr = {
                                     swap: value.swapx,
-                                    sup: [],
+                                    sup: value.supx,
                                     hr: [],
                                     swapx_comp: value.supx_comp,
-                                    supx_comp: [],
+                                    supx_comp: value.supx_comp,
                                     hrx_comp: [],
                                 };
                             } else {
@@ -374,7 +367,7 @@ module.exports = async (data, callback) => {
                 // updated code
                 if(requestor){
                     end.requestor_approve = 'x';
-                    end.employee_requestor = [ value._user_login, requestor ];
+                    end.employee_requestor = [ value._user, requestor ];
                 }
                 let new_arr = {
                     ...arr,
