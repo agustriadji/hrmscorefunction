@@ -278,10 +278,10 @@ module.exports = async (data, callback) => {
                             master = 'schedule';
                             end = {sup: 1, hr: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
-                                sup: value.supx,
+                                sup: /*value.supx*/[],
                                 hr: value.hrx,
                                 swap: [],
-                                supx_comp: value.supx_comp,
+                                supx_comp: /*value.supx_comp*/[],
                                 hrx_comp: value.hrx_comp,
                                 swapx_comp: []
                             };
@@ -289,13 +289,13 @@ module.exports = async (data, callback) => {
                     }
                     if (value._type == 2) {
                         master = 'schedule';
-                        end = {sup: 1, hr: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                        end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                         arr = {
                             sup: value.supx,
-                            hr: value.hrx,
+                            hr: /*value.hrx*/[],
                             swap: [],
                             supx_comp: value.supx_comp,
-                            hrx_comp: value.hrx_comp,
+                            hrx_comp: /*value.hrx_comp*/[],
                             swapx_comp: []
                         };
                     }
@@ -340,13 +340,13 @@ module.exports = async (data, callback) => {
                         if (value._local_it == 'local') {
                             if (value._supervisorx) {
                                 master = 'schedule';
-                                end = {swap: 1, sup: 0, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                                end = {swap: 1, sup: 2, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                                 arr = {
                                     swap: value.swapx,
-                                    sup: [],
+                                    sup: value.supx,
                                     hr: [],
                                     swapx_comp: value.supx_comp,
-                                    supx_comp: [],
+                                    supx_comp: value.supx_comp,
                                     hrx_comp: [],
                                 };
                             } else {
