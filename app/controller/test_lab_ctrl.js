@@ -43,7 +43,7 @@ module.exports = (req, callback) => {
 					_user: value.user,
 					_from_type: value.from_type,
 					_swap: value.swap,
-					_user_login : value.user_login
+					_user_login : value.user_login || null
 				};
 				// console.log(val, '==== SIAPPPPPPP');
 				
