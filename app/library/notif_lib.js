@@ -345,25 +345,35 @@ module.exports = async (data, callback) => {
                     }
                     if (value._type == 6) {
                         if (value._local_it == 'local') {
+                            end = {};
+                            end.employee = value._employee_id;
+                            end.requestor_approve = "o";
+                            end.employee_dates = null;
+                            end.employee_times = null;
+                            end.employee_requestor = [
+                                value._user_login,
+                                requestor,
+                            ];
+                            value.swapx_comp.push('2014888');
                             if (value._supervisorx) {
                                 master = 'schedule';
-                                end = {swap: 1, sup: 0, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                                end = {...end, swap: 1, sup: 0, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                                 arr = {
                                     swap: value.swapx,
                                     sup: [],
                                     hr: [],
-                                    swapx_comp: value.supx_comp,
+                                    swapx_comp: value.swapx_comp,
                                     supx_comp: [],
                                     hrx_comp: [],
                                 };
                             } else {
                                 master = 'schedule';
-                                end = {swap: 1, sup: 2, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                                end = {...end, swap: 1, sup: 2, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                                 arr = {
                                     swap: value.swapx,
                                     sup: value.supx,
                                     hr: [],
-                                    swapx_comp: value.supx_comp,
+                                    swapx_comp: value.swapx_comp,
                                     supx_comp: value.supx_comp,
                                     hrx_comp: [],
                                 };
@@ -378,7 +388,7 @@ module.exports = async (data, callback) => {
                 }
                 let new_arr = {
                     ...arr,
-                    requestor_stat: [{[value._employee_id]: 0}],
+                    requestor_stat: {[value._employee_id]: 0},
                     chat_id: [],
                     req_flow: end,
                     master: master,
