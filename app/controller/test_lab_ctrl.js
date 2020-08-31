@@ -37,13 +37,13 @@ module.exports = (req, callback) => {
 				// 	from_type: "attendance"
 				// };
 				let val =  {
-					_type: value.type,
-					_employee_id: value.name,
-					_local_it: value.local_it,
-					_user: value.user,
-					_from_type: value.from_type,
-					_swap: value.swap,
-					_user_login : value.user_login || null
+					_type: value.type, // type request INT
+					_employee_id: value.name, // employee_id atau input name yang request atau di request
+					_local_it: value.local_it, // local
+					_user: value.user, // user
+					_from_type: value.from_type, // attendance
+					_swap: value.swap, // jika type 6 makan value swap adalah employee_id swap
+					_user_login : value.user_login || null // employee_id user login
 				};
 				// console.log(val, '==== SIAPPPPPPP');
 				

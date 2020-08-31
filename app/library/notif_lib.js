@@ -33,7 +33,7 @@ module.exports = async (data, callback) => {
                     const _emp_x = await database.promise().query(`select * from view_nonactive_login where employee_id  =   '${val._employee_id}' and (lower(role_name) = 'regular employee user' or  lower(role_name) = 'user') `);
                     const _hrx =  await database.promise().query(`select employee_id from  ldap, role where ldap.role_id = role.role_id and (lower(role.role_name) like '%human%' or  '%human resource%' or '%hr%')`);
                     //const _subx = await database.promise().query(`select subordinate from emp_subordinate where employee_id = '${val._employee_id}'`);
-                    const _subx = val._ids == undefined ? [] : await database.promise().query(`select swap_with from att_swap_shift where employee_id = '${val._employee_id}' and swap_id = (select request_id from att_schedule_request where employee_id='${val._employee_id}' and id = ${val._ids} and type_id = 6 order by id desc limit 1 )`);
+                    //const _subx = val._ids == undefined ? [] : await database.promise().query(`select swap_with from att_swap_shift where employee_id = '${val._employee_id}' and swap_id = (select request_id from att_schedule_request where employee_id='${val._employee_id}' and id = ${val._ids} and type_id = 6 order by id desc limit 1 )`);
                     
                     return next(null, {
                         ...val,
@@ -41,7 +41,7 @@ module.exports = async (data, callback) => {
                         __supervisorx: _supervisorx[0],
                         __emp_x: _emp_x[0],
                         __hrx: _hrx[0],
-                        __subx: _subx.length == 0 ? [] : _subx[0],
+                        __subx: [],
                     });
                 })();
             },
@@ -199,7 +199,7 @@ module.exports = async (data, callback) => {
                 }
                 let swapx;
                 let swapx_comp;
-                if (value._swap == null) {
+                if (value._swap == null && value._type == 6) {
                     swapx = [
                         {
                             "2014888": 0,
@@ -345,15 +345,15 @@ module.exports = async (data, callback) => {
                     }
                     if (value._type == 6) {
                         if (value._local_it == 'local') {
-                            end = {};
-                            end.employee = value._employee_id;
-                            end.requestor_approve = "o";
-                            end.employee_dates = null;
-                            end.employee_times = null;
-                            end.employee_requestor = [
-                                value._user_login,
-                                requestor,
-                            ];
+                            //end = {};
+                            // end.employee = value._employee_id;
+                            // end.requestor_approve = "o";
+                            // end.employee_dates = null;
+                            // end.employee_times = null;
+                            // end.employee_requestor = [
+                            //     value._user_login,
+                            //     requestor,
+                            // ];
                             value.swapx_comp.push('2014888');
                             if (value._supervisorx) {
                                 master = 'schedule';
@@ -382,6 +382,7 @@ module.exports = async (data, callback) => {
                     }
                 
                 // updated code
+               // return console.log(requestor);
                 if(requestor){
                     end.requestor_approve = 'x';
                     end.employee_requestor = [ value._user_login, requestor ];
