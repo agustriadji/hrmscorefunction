@@ -27,18 +27,23 @@ module.exports = async (data, callback) => {
                         ...data
                     };
 
+                    // const _check_su = await database.promise().query(`select  * from  view_nonactive_login where employee_id  =  '${val._employee_id}'  and lower(role_name) =   'superuser'  `);
+                    // const _supervisorx = await database.promise().query(`select * from emp_supervisor where employee_id =  '${val._employee_id}' `);
+                    // const _emp_x = await database.promise().query(`select * from view_nonactive_login where employee_id  =   '${val._employee_id}' and (lower(role_name) = 'regular employee user' or  lower(role_name) = 'user') `);
+                    // const _hrx =  await database.promise().query(`select employee_id from  ldap, role where ldap.role_id = role.role_id and (lower(role.role_name) like '%human%' or  '%human resource%' or '%hr%')`);
+                    // let _hrx;
+                    // if (val._local_it == 'expat') {
+                    //     _hrx = await database.promise().query(`select distinct job.title, emp.employee_id from emp, job_history, job where emp.employee_id = job_history.employee_id and job.id =  job_history.job and (lower(job.title) like '%it director%')`);
+                    // } else {
+                    //     _hrx = await database.promise().query(`select distinct job.title, emp.employee_id from emp, job_history, job where emp.employee_id = job_history.employee_id and job.id =  job_history.job and ((lower(job.title) like '%hr%') or 
+                    //                                             (lower(job.title) like '%human resource%') or (lower(job.title) like '%human%'))`);
+                    // }
+                    // const _subx = await database.promise().query(`select subordinate from emp_subordinate where employee_id = '${val._employee_id}'`);
+                    //const _supx = await database.promise().query(`select supervisor from emp_supervisor where employee_id = '${val._employee_id}'`);
                     const _check_su = await database.promise().query(`select  * from  view_nonactive_login where employee_id  =  '${val._employee_id}'  and lower(role_name) =   'superuser'  `);
-                    const _supervisorx = await database.promise().query(`select * from emp_supervisor where supervisor =  '${val._employee_id}' `);
+                    const _supervisorx = await database.promise().query(`select * from emp_supervisor where employee_id =  '${val._employee_id}' `);
                     const _emp_x = await database.promise().query(`select * from view_nonactive_login where employee_id  =   '${val._employee_id}' and (lower(role_name) = 'regular employee user' or  lower(role_name) = 'user') `);
-                    let _hrx;
-                    if (val._local_it == 'expat') {
-                        _hrx = await database.promise().query(`select distinct job.title, emp.employee_id from emp, job_history, job where emp.employee_id = job_history.employee_id and job.id =  job_history.job and (lower(job.title) like '%it director%')`);
-                    } else {
-                        _hrx = await database.promise().query(`select distinct job.title, emp.employee_id from emp, job_history, job where emp.employee_id = job_history.employee_id and job.id =  job_history.job and ((lower(job.title) like '%hr%') or 
-                                                                (lower(job.title) like '%human resource%') or (lower(job.title) like '%human%'))`);
-                    }
-                    const _subx = await database.promise().query(`select subordinate from emp_subordinate where employee_id = '${val._employee_id}'`);
-                    const _supx = await database.promise().query(`select supervisor from emp_supervisor where employee_id = '${val._employee_id}'`);
+                    const _hrx =  await database.promise().query(`select employee_id from  ldap, role where ldap.role_id = role.role_id and (lower(role.role_name) like '%human%' or  '%human resource%' or '%hr%')`);
                     
                     return next(null, {
                         ...val,
@@ -46,8 +51,7 @@ module.exports = async (data, callback) => {
                         __supervisorx: _supervisorx[0],
                         __emp_x: _emp_x[0],
                         __hrx: _hrx[0],
-                        __subx: _subx.length == 0 ? [] : _subx[0],
-                        __supx: _supx[0],
+                        __subx: [],
                     });
                 })();
             },
@@ -65,8 +69,8 @@ module.exports = async (data, callback) => {
                     }
                 ];
                 let supx_comp = ['2014888'];
-                if (value.__supx.length > 0) {
-                    value.__supx.map((el, index) => {
+                if (value.__supervisorx.length > 0) {
+                    value.__supervisorx.map((el, index) => {
                         let jsons = {
                             [el.supervisor]: 0,
                             sup_stat: 0,
@@ -76,14 +80,17 @@ module.exports = async (data, callback) => {
                         };
 
                         // updated code
-                        if(value._user && value._user !== value._employee_id){
-                            const cekHR = value.__hrx.findIndex((str)=>{return str.employee_id == value._user;});
-                            const cekSPV = value.__supervisorx.findIndex((str)=>{return str.employee_id == value._user;});
-                            if( cekSPV > 1 || (cekSPV > -1 && cekHR > -1)){
+                        
+                        if(value._employee_id && value._employee_id !== value._user_login){
+                            // let cekHR = value.__hrx.findIndex((str)=>{return str.employee_id === value._user_login;});
+                            // let cekSPV = value.__supervisorx.findIndex((str)=>{return str.supervisor === value._user_login;});
+
+                            if(el.supervisor === value._user_login){
                                 requestor = 'sup';
                                 const datetime = new Date().toISOString().split('T');
                                 const dates = datetime[0];
                                 const times = datetime[1].substring(0,5);
+                                //console.log((value._employee_id && value._employee_id !== value._user_login), value._employee_id, value._user_login, cekSPV, el.supervisor)
                                 jsons = {
                                     [el.supervisor]: 1,
                                     sup_stat: 1,
@@ -96,7 +103,7 @@ module.exports = async (data, callback) => {
                         supx.push(jsons);
                         
                         supx_comp.push(el.supervisor);
-                        if (value.__supx.length == (index + 1)) {
+                        if (value.__supervisorx.length == (index + 1)) {
                             return next(null, { ...value, supx: supx, supx_comp: supx_comp });
                         }
                     });
@@ -129,12 +136,12 @@ module.exports = async (data, callback) => {
                         };
                         
                         // updated code
-                        if(value._user && value._user !== value._employee_id){
-                            const cekHR = value.__hrx.findIndex((str)=> str.employee_id == value._user );
-                            const cekSPV = value.__supervisorx.findIndex((str) =>  str.employee_id == value._user);
-                            
-                            if(cekHR > -1){
-                                if(requestor != 'sup'){
+                        if(value._employee_id && value._employee_id !== value._user_login){
+                            // const cekHR = value.__hrx.findIndex((str)=> str.employee_id == value._user_login );
+                            // const cekSPV = value.__supervisorx.findIndex((str) =>  str.employee_id == value._user_login);
+                            if(value._user_login === '2014888'){
+                                requestor = 'su';
+                            }else if(requestor != 'sup' && el.employee_id === value._user_login){
                                     requestor = 'hr';
                                     const datetime = new Date().toISOString().split('T');
                                     const dates = datetime[0];
@@ -146,7 +153,7 @@ module.exports = async (data, callback) => {
                                         hr_time: times,
                                         read_stat: 1,
                                     }
-                                }
+                                
                             }
                         }
                         hrx.push(jsons);
@@ -160,55 +167,13 @@ module.exports = async (data, callback) => {
                 }
             },
             (value, next) => {
-                // console.log(value, '=== OKE WOYy');
-                // return;
-                // SET SUBX
-                let subx  = [
-                    {
-                        "2014888": 0,
-                        "swap_stat": 0,
-                        "swap_date": "0000-00-00",
-                        "swap_time": "00:00",
-                        "read_stat": 0
-                    }
-                ];
-                let subx_comp = ['2014888'];
-                
-                if (value.__subx.length > 0) {
-                    value.__subx.map((el, index) => {
-                        subx.push({
-                            [el.subordinate]: 0,
-                            swap_stat: 0,
-                            swap_date: "0000-00-00",
-                            swap_time: "00:00",
-                            read_stat: 0,
-                        });
-                        subx_comp.push(el.subordinate);
-                        if (value.__subx.length == (index + 1)) {
-                            return next(null, { ...value, subx: subx, subx_comp: subx_comp });
-                        }
-                    });
-                } else {
-                    return next(null, { ...value, subx: subx, subx_comp: subx_comp });
-                }
-
-            },
-            (value, next) => {
-                // console.log(value, '=== WOHIHIHFIHF');
-                // return;
-                // SET SWAPX
-                let swapx = [];
-                let swapx_comp = [];
-                return next(null, { ...value, swapx: swapx, swapx_comp: swapx_comp });
-            },
-            (value, next) => {
                 let master, end, arr;
 
                 
                 if (value._type == 2) {
                     if (value._local_it == 'local') {
                         master = 'leave';
-                        end = {hr: 1, sup: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
+                        end = {hr: 1, sup: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                         arr = {
                             hr: value.hrx,
                             sup: value.supx,
@@ -495,6 +460,8 @@ module.exports = async (data, callback) => {
                           
                 // updated code
                 if(requestor){
+                    end[`${requestor}`] = 0;
+                    end[`${requestor}_approve`] = 'x';
                     end.requestor_approve = 'x';
                     end.employee_requestor = [ value._user, requestor ];
                 }
