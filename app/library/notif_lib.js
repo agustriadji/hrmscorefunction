@@ -319,29 +319,18 @@ module.exports = async (data, callback) => {
                         };
                     }
                     if (value._type == 5) {
-                        if (value._user == 'sup') {
-                            master = 'schedule';
-                            end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
-                            arr = {
-                                swap: value.subx,
-                                sup: [],
-                                hr: [],
-                                swapx_comp: value.subx_comp,
-                                supx_comp: [],
-                                hrx_comp: [],
-                            };
-                        } else {
+                        
                             master = 'schedule';
                             end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
                                 sup: value.supx,
-                                swap: [],
+                                swap: value.swapx,
                                 hr: [],
                                 supx_comp: value.supx_comp,
                                 hrx_comp: [],
-                                swapx_comp: []
+                                swapx_comp: value.swapx_comp
                             };
-                        }
+                        
                     }
                     if (value._type == 6) {
                         if (value._local_it == 'local') {
@@ -386,6 +375,9 @@ module.exports = async (data, callback) => {
                 if(requestor){
                     end.requestor_approve = 'x';
                     end.employee_requestor = [ value._user_login, requestor ];
+                    end.employee_dates = '0000-00-00';
+                    end.employee_times = '00:00';
+                    end.employee_approve = 'o';
                 }
                 let new_arr = {
                     ...arr,

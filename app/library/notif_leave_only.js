@@ -463,6 +463,9 @@ module.exports = async (data, callback) => {
                     end[`${requestor}`] = 0;
                     end[`${requestor}_approve`] = 'x';
                     end.requestor_approve = 'x';
+                    end.employee_dates = '0000-00-00';
+                    end.employee_times = '00:00';
+                    end.employee_approve = 'o';
                     end.employee_requestor = [ value._user, requestor ];
                 }
                 let new_arr = {
