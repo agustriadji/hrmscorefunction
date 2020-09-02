@@ -3,8 +3,6 @@
 const controller    = require('./app/controller');
 const path       	= require('path');
 
-
-
 module.exports = {
   notifLib: (req, callback)=>{
     return new Promise((resolve, reject) => {
@@ -36,5 +34,3 @@ module.exports = {
     })
   },
 }
-
-

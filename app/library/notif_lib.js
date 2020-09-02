@@ -382,51 +382,60 @@ module.exports = async (data, callback) => {
                 end.employee_approve = null; 
                 end.approver = [];
                 
-                const idx1 = new_arr.hrx_comp.length;
-                const idx2 = new_arr.supx_comp.length;
-                const idx3 = new_arr.swapx_comp.length;
+                const idx1 = arr.hrx_comp.length;
+                const idx2 = arr.supx_comp.length;
+                const idx3 = arr.swapx_comp.length;
 
                 if(idx1 != -1){
-                    $arr = ["job_approval":strtoupper($keys),"name":null,"date":null,"time":null,"status":'Pending'];
-                    approver.push({
+                    
+                    end.approver.push({
                         job_approval : 'HR',
-                        name : NULL,
-                        date : NULL,
-                        time: NULL,
+                        name : null,
+                        date : null,
+                        time: null,
                         status : 'Pending Approval'
 
                     });
                 }
                 if(idx2 != -1){
-                    $arr = ["job_approval":strtoupper($keys),"name":null,"date":null,"time":null,"status":'Pending'];
-                    approver.push({
+                    
+                    end.approver.push({
                         job_approval : 'SUP',
-                        name : NULL,
-                        date : NULL,
-                        time: NULL,
+                        name : null,
+                        date : null,
+                        time: null,
                         status : 'Pending Approval'
 
                     });
                 }
                 if(idx3 != -1){
-                    $arr = ["job_approval":strtoupper($keys),"name":null,"date":null,"time":null,"status":'Pending'];
-                    approver.push({
+                    
+                    end.approver.push({
                         job_approval : 'SWAP',
-                        name : NULL,
-                        date : NULL,
-                        time: NULL,
+                        name : null,
+                        date : null,
+                        time: null,
                         status : 'Pending Approval'
 
                     });
                 }
                if(requestor){
-
-                    const check_approve = approver.findIndex((str)=>{ return str.job_approval == requestor.toUpperCase();  })
+                    const cek_approve = end.approver.findIndex((str)=>{ return str.job_approval == requestor.toUpperCase(); });
+                    end.approver.splice(cek_approve,1);
                     end.requestor_approve = 'x';
                     end.employee_requestor = [ value._user_login, requestor ];
-                    end.employee_dates = dates;
-                    end.employee_times = times;
+                    end.employee_dates = null;
+                    end.employee_times = null;
                     end.employee_approve = 'o';
+
+                    end.approver.push({
+                        job_approval : 'EMPLOYEE',
+                        name : null,
+                        date : null,
+                        time: null,
+                        status : 'Pending Approval'
+
+                    });
                 }
                 let new_arr = {
                     ...arr,

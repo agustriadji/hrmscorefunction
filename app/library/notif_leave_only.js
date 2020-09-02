@@ -462,13 +462,62 @@ module.exports = async (data, callback) => {
                 end.employee_dates = '0000-00-00';
                 end.employee_times = '00:00';
                 end.employee_approve = null; 
-                if(requestor){
-                    end[`${requestor}_approve`] = 'x';
+                end.approver = [];
+                
+                const idx1 = arr.hrx_comp.length;
+                const idx2 = arr.supx_comp.length;
+                const idx3 = arr.swapx_comp.length;
+
+                if(idx1 != -1){
+                    
+                    end.approver.push({
+                        job_approval : 'HR',
+                        name : null,
+                        date : null,
+                        time: null,
+                        status : 'Pending Approval'
+
+                    });
+                }
+                if(idx2 != -1){
+                    
+                    end.approver.push({
+                        job_approval : 'SUP',
+                        name : null,
+                        date : null,
+                        time: null,
+                        status : 'Pending Approval'
+
+                    });
+                }
+                if(idx3 != -1){
+                    
+                    end.approver.push({
+                        job_approval : 'SWAP',
+                        name : null,
+                        date : null,
+                        time: null,
+                        status : 'Pending Approval'
+
+                    });
+                }
+               if(requestor){
+                    const cek_approve = end.approver.findIndex((str)=>{ return str.job_approval == requestor.toUpperCase(); });
+                    end.approver.splice(cek_approve,1);
                     end.requestor_approve = 'x';
-                    end.employee_dates = dates;
-                    end.employee_times = times;
+                    end.employee_requestor = [ value._user_login, requestor ];
+                    end.employee_dates = null;
+                    end.employee_times = null;
                     end.employee_approve = 'o';
-                    end.employee_requestor = [ value._user, requestor ];
+
+                    end.approver.push({
+                        job_approval : 'EMPLOYEE',
+                        name : null,
+                        date : null,
+                        time: null,
+                        status : 'Pending Approval'
+
+                    });
                 }
                 let new_arr = {
                     ...arr,
