@@ -5,15 +5,15 @@ module.exports = (req, callback) => {
 	
 	async.waterfall([
 		(next) => {
-			if(req.date_req){
+			if(req.type == 'perday'){
 				var dates = req.date_req;
-				library.calculation('view-attendance-perday',req.dates,req.name,null,null,null,(err, dt)=>{
+				library.calculation(req.type,req.dates,req.name,null,null,null,(err, dt)=>{
 					if(err) return next(err, null)
 
 					return next(null, dt)
 				});
 			}else{
-				library.calculation('view-attendance', req.name, req.dates,null,null,null,(err, dt)=>{
+				library.calculation(req.type, req.name, req.dates,req.job,req.department,req.localit,(err, dt)=>{
 					if(err) return next(err, null)
 
 					return next(null, dt)

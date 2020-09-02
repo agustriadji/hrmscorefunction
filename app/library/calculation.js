@@ -399,13 +399,13 @@ module.exports = (types,  param_emp,rangeDt, job, department, localit, paging = 
     
     async.waterfall([
         (next)=>{
-                if(types == 'cut-off'){
+                if(types == 'cutoff'){
                     querys = `CALL db_hrms_prod.trial_employee_attendance_record('${param_emp}',NULL,'${rangeDt}',${department},${job},${localit},'CUTOFF')`;
                 }else if(types == 'cut-off-record'){
                     querys = `CALL db_hrms_prod.trial_employee_attendance_record('${param_emp}',NULL,'${rangeDt}',${department},${job},${localit},'CUTOFF')`;
-                }else if(types == `view-attendance`){
+                }else if(types == `attendance`){
                     querys = `CALL db_hrms_prod.trial_employee_attendance_record('${param_emp}','${rangeDt}',NULL,NULL,NULL,NULL,'ATTENDANCE')`;
-                }else if(types == "view-attendance-perday"){
+                }else if(types == "perday"){
                     querys = `CALL db_hrms_prod.trial_employee_attendance_record('${param_emp}','${rangeDt}',NULL,NULL,NULL,NULL,'ATTENDANCE')`;
                 }
                 database.query(querys, (err, result)=>{

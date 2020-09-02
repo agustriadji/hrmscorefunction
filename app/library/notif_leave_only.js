@@ -2,6 +2,7 @@ const async     = require('async');
 const database  = require('../connection/mysql');
 const config    = require('../config.js');
 const procedure = require('../procedure');
+const momentjs  = require('moment');
 
 
 module.exports = async (data, callback) => {
@@ -12,6 +13,9 @@ module.exports = async (data, callback) => {
 	 * 1. Check id is int
 	 * 2. Check id is available in table
 	 */
+    const datetime = new Date().toISOString().split('T');
+    const dates = datetime[0];
+    const times = datetime[1].substring(0,5);
     
     return new Promise((resolve, reject) => {
         // updated code
@@ -87,9 +91,6 @@ module.exports = async (data, callback) => {
 
                             if(el.supervisor === value._user_login){
                                 requestor = 'sup';
-                                const datetime = new Date().toISOString().split('T');
-                                const dates = datetime[0];
-                                const times = datetime[1].substring(0,5);
                                 //console.log((value._employee_id && value._employee_id !== value._user_login), value._employee_id, value._user_login, cekSPV, el.supervisor)
                                 jsons = {
                                     [el.supervisor]: 1,
@@ -143,9 +144,6 @@ module.exports = async (data, callback) => {
                                 requestor = 'su';
                             }else if(requestor != 'sup' && el.employee_id === value._user_login){
                                     requestor = 'hr';
-                                    const datetime = new Date().toISOString().split('T');
-                                    const dates = datetime[0];
-                                    const times = datetime[1].substring(0,5);
                                     jsons = {
                                         [el.employee_id]: 1,
                                         hr_stat: 1,
@@ -459,12 +457,16 @@ module.exports = async (data, callback) => {
                 }
                           
                 // updated code
+                end.requestor_approve = null;
+                end.employee_requestor = [];
+                end.employee_dates = '0000-00-00';
+                end.employee_times = '00:00';
+                end.employee_approve = null; 
                 if(requestor){
-                    end[`${requestor}`] = 0;
                     end[`${requestor}_approve`] = 'x';
                     end.requestor_approve = 'x';
-                    end.employee_dates = '0000-00-00';
-                    end.employee_times = '00:00';
+                    end.employee_dates = dates;
+                    end.employee_times = times;
                     end.employee_approve = 'o';
                     end.employee_requestor = [ value._user, requestor ];
                 }

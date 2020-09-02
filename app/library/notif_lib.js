@@ -2,6 +2,7 @@ const async     = require('async');
 const database  = require('../connection/mysql');
 const config    = require('../config.js');
 const procedure = require('../procedure');
+const { NULL } = require('mysql2/lib/constants/types');
 
 
 module.exports = async (data, callback) => {
@@ -12,7 +13,9 @@ module.exports = async (data, callback) => {
 	 * 1. Check id is int
 	 * 2. Check id is available in table
 	 */
-    
+    const datetime = new Date().toISOString().split('T');
+    const dates = datetime[0];
+    const times = datetime[1].substring(0,5);    
     return new Promise((resolve, reject) => {
         // updated code
         let requestor = null;
@@ -372,11 +375,57 @@ module.exports = async (data, callback) => {
                 
                 // updated code
                // return console.log(requestor);
-                if(requestor){
+                end.requestor_approve = null;
+                end.employee_requestor = [];
+                end.employee_dates = '0000-00-00';
+                end.employee_times = '00:00';
+                end.employee_approve = null; 
+                end.approver = [];
+                
+                const idx1 = new_arr.hrx_comp.length;
+                const idx2 = new_arr.supx_comp.length;
+                const idx3 = new_arr.swapx_comp.length;
+
+                if(idx1 != -1){
+                    $arr = ["job_approval":strtoupper($keys),"name":null,"date":null,"time":null,"status":'Pending'];
+                    approver.push({
+                        job_approval : 'HR',
+                        name : NULL,
+                        date : NULL,
+                        time: NULL,
+                        status : 'Pending Approval'
+
+                    });
+                }
+                if(idx2 != -1){
+                    $arr = ["job_approval":strtoupper($keys),"name":null,"date":null,"time":null,"status":'Pending'];
+                    approver.push({
+                        job_approval : 'SUP',
+                        name : NULL,
+                        date : NULL,
+                        time: NULL,
+                        status : 'Pending Approval'
+
+                    });
+                }
+                if(idx3 != -1){
+                    $arr = ["job_approval":strtoupper($keys),"name":null,"date":null,"time":null,"status":'Pending'];
+                    approver.push({
+                        job_approval : 'SWAP',
+                        name : NULL,
+                        date : NULL,
+                        time: NULL,
+                        status : 'Pending Approval'
+
+                    });
+                }
+               if(requestor){
+
+                    const check_approve = approver.findIndex((str)=>{ return str.job_approval == requestor.toUpperCase();  })
                     end.requestor_approve = 'x';
                     end.employee_requestor = [ value._user_login, requestor ];
-                    end.employee_dates = '0000-00-00';
-                    end.employee_times = '00:00';
+                    end.employee_dates = dates;
+                    end.employee_times = times;
                     end.employee_approve = 'o';
                 }
                 let new_arr = {
@@ -387,7 +436,9 @@ module.exports = async (data, callback) => {
                     master: master,
                     local_it: value._local_it
                 };
-
+                
+                
+                
                 let jsonData = JSON.stringify(new_arr);
                 
 
