@@ -428,6 +428,12 @@ module.exports = async (data, callback) => {
                     end.employee_times = null;
                     end.employee_approve = 'o';
 
+                    if(requestor == 'sup'){
+                        end.sup_approve = 'x';
+                    }else if(requestor == 'hr'){
+                        end.hr_approve = 'x';
+                    }
+
                     end.approver.push({
                         job_approval : 'EMPLOYEE',
                         name : null,

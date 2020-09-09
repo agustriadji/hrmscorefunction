@@ -14,6 +14,7 @@ module.exports = (req, callback) => {
 				});
 			}else{
 				library.calculation(req.type, req.name, req.dates,req.job,req.department,req.localit,(err, dt)=>{
+					//console.log(err,dt, 9090)
 					if(err) return next(err, null)
 
 					return next(null, dt)

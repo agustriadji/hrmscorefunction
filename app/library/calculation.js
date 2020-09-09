@@ -395,19 +395,31 @@ function calculation_attendance(arr){
     return arr;
 }
 
-module.exports = (types,  param_emp,rangeDt, job, department, localit, paging = null,callback)=> {
+module.exports = (types,  param_emp,rangeDt, job, department, localit, callback)=> {
     
     async.waterfall([
         (next)=>{
                 if(types == 'cutoff'){
-                    querys = `CALL db_hrms_prod.trial_employee_attendance_record('${param_emp}',NULL,'${rangeDt}',${department},${job},${localit},'CUTOFF')`;
+                    if(!param_emp){
+                        querys = `CALL db_hrms_prod.trial_employee_attendance_record(NULL,NULL,'${rangeDt}',${department},${job},${localit},'CUTOFF')`;
+
+                    }else{
+                        querys = `CALL db_hrms_prod.trial_employee_attendance_record('${param_emp}',NULL,'${rangeDt}',${department},${job},${localit},'CUTOFF')`;
+                    }
                 }else if(types == 'cut-off-record'){
-                    querys = `CALL db_hrms_prod.trial_employee_attendance_record('${param_emp}',NULL,'${rangeDt}',${department},${job},${localit},'CUTOFF')`;
+                    if(!param_emp){
+
+                        querys = `CALL db_hrms_prod.trial_employee_attendance_record(NULL,NULL,'${rangeDt}',${department},${job},${localit},'CUTOFF')`;
+                    }else{
+                        querys = `CALL db_hrms_prod.trial_employee_attendance_record('${param_emp}',NULL,'${rangeDt}',${department},${job},${localit},'CUTOFF')`;
+                        
+                    }
                 }else if(types == `attendance`){
                     querys = `CALL db_hrms_prod.trial_employee_attendance_record('${param_emp}','${rangeDt}',NULL,NULL,NULL,NULL,'ATTENDANCE')`;
                 }else if(types == "perday"){
                     querys = `CALL db_hrms_prod.trial_employee_attendance_record('${param_emp}','${rangeDt}',NULL,NULL,NULL,NULL,'ATTENDANCE')`;
                 }
+                //console.log(querys, 7777);
                 database.query(querys, (err, result)=>{
                     if(err) return next(true, err)
                     
@@ -866,7 +878,7 @@ module.exports = (types,  param_emp,rangeDt, job, department, localit, paging = 
         if(err){
             return callback(true, {
                 data : [],
-                status: 500,
+                status: 50,
                 message : 'record is empty'
             })
         }else{
