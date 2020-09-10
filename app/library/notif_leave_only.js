@@ -503,6 +503,9 @@ module.exports = async (data, callback) => {
                 }
                if(requestor){
                     const cek_approve = end.approver.findIndex((str)=>{ return str.job_approval == requestor.toUpperCase(); });
+                    if(cek_approve > -1){
+                        end.approver.splice(cek_approve,1);
+                    }
                     end.approver.splice(cek_approve,1);
                     end.requestor_approve = 'x';
                     end.employee_requestor = [ value._user_login, requestor ];
