@@ -4,22 +4,19 @@ const controller    = require('./app/controller');
 const path       	= require('path');
 
 
-  // controller.calculation({
-  //   type: 'cutoff', // 5, 7, 8,9, dsb
-  //   name: null, // id emp
-  //   dates: "2020/02/27-2020/03/08", // memang nilainya harcode kaya gini
-  //   job: null, // memang nilainya harcode kaya gini
-  //   department: 139, // memang nilainya harcode kaya gini,
-  //   localit: null
-  // }, (message,dt)=>{
-  //   console.log(message, dt,9090);
-  // });
+ /* controller.calculation({
+    type: 'cutoff',
+    name: null,
+    dates: '2020/02/27-2020/03/08',
+    department: 139,
+    job: null,
+    localit: null
+  }, (message,dt)=>{
+    console.log(message, dt,9090);
+  });
 
-  // library.calculation(req.type, req.name, req.dates,req.job,req.department,req.localit,(err, dt)=>{
-  //   if(err) return next(err, null)
+*/
 
-  //   return next(null, dt)
-  // });
 
 module.exports = {
   notifLib: (req, callback)=>{

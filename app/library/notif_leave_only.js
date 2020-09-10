@@ -468,7 +468,7 @@ module.exports = async (data, callback) => {
                 const idx2 = arr.supx_comp.length;
                 const idx3 = arr.swapx_comp.length;
 
-                if(idx1 != -1){
+                if(idx1 > 0){
                     
                     end.approver.push({
                         job_approval : 'HR',
@@ -479,7 +479,7 @@ module.exports = async (data, callback) => {
 
                     });
                 }
-                if(idx2 != -1){
+                if(idx2 > 0){
                     
                     end.approver.push({
                         job_approval : 'SUP',
@@ -490,7 +490,7 @@ module.exports = async (data, callback) => {
 
                     });
                 }
-                if(idx3 != -1){
+                if(idx3 > 0){
                     
                     end.approver.push({
                         job_approval : 'SWAP',
