@@ -424,7 +424,6 @@ module.exports = async (data, callback) => {
                     if(cek_approve > -1){
                         end.approver.splice(cek_approve,1);
                     }
-                    end.approver.splice(cek_approve,1);
                     end.requestor_approve = 'x';
                     end.employee_requestor = [ value._user_login, requestor ];
                     end.employee_dates = null;

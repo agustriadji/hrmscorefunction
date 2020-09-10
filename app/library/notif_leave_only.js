@@ -466,7 +466,6 @@ module.exports = async (data, callback) => {
                 
                 const idx1 = arr.hrx_comp.length;
                 const idx2 = arr.supx_comp.length;
-                const idx3 = arr.swapx_comp.length;
 
                 if(idx1 > 0){
                     
@@ -490,23 +489,11 @@ module.exports = async (data, callback) => {
 
                     });
                 }
-                if(idx3 > 0){
-                    
-                    end.approver.push({
-                        job_approval : 'SWAP',
-                        name : null,
-                        date : null,
-                        time: null,
-                        status : 'Pending Approval'
-
-                    });
-                }
                if(requestor){
                     const cek_approve = end.approver.findIndex((str)=>{ return str.job_approval == requestor.toUpperCase(); });
                     if(cek_approve > -1){
                         end.approver.splice(cek_approve,1);
                     }
-                    end.approver.splice(cek_approve,1);
                     end.requestor_approve = 'x';
                     end.employee_requestor = [ value._user_login, requestor ];
                     end.employee_dates = null;
