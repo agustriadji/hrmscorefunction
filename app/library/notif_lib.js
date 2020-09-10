@@ -288,10 +288,10 @@ module.exports = async (data, callback) => {
                             master = 'schedule';
                             end = {sup: 1, hr: 2, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
-                                sup: value.supx,
+                                sup: [],
                                 hr: value.hrx,
                                 swap: [],
-                                supx_comp: value.supx_comp,
+                                supx_comp: [],
                                 hrx_comp: value.hrx_comp,
                                 swapx_comp: []
                             };
@@ -347,18 +347,7 @@ module.exports = async (data, callback) => {
                             //     requestor,
                             // ];
                             value.swapx_comp.push('2014888');
-                            if (value._supervisorx) {
-                                master = 'schedule';
-                                end = {...end, swap: 1, sup: 0, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
-                                arr = {
-                                    swap: value.swapx,
-                                    sup: [],
-                                    hr: [],
-                                    swapx_comp: value.swapx_comp,
-                                    supx_comp: [],
-                                    hrx_comp: [],
-                                };
-                            } else {
+                            
                                 master = 'schedule';
                                 end = {...end, swap: 1, sup: 2, hr: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                                 arr = {
@@ -369,7 +358,7 @@ module.exports = async (data, callback) => {
                                     supx_comp: value.supx_comp,
                                     hrx_comp: [],
                                 };
-                            }
+                            
                         }
                     }
                 
