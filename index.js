@@ -39,8 +39,11 @@ module.exports = {
     })
   },
   calculation: (req, callback)=>{
-    controller.calculation(req, (err, message) => {
-      return callback(message);
+    return new Promise((resolve, reject)=>{
+      controller.calculation(req, (err, message) => {
+        if (err) return reject(err);
+        return resolve(message);
+      })
     })
   },
   check_previllage_request: (req, callback)=>{

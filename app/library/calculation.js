@@ -840,7 +840,7 @@ module.exports = (types,  param_emp,rangeDt, job, department, localit, callback)
                     'local_it': querys[i].local_it,
                     'early_c' :  querys[i].early_c,
                     'date' :  querys[i].date,
-                    'nextday': querys[i].nextdays || '-',
+                    'nextday': querys[i].nextdays,
                     'colorLate' :  querys[i].colorLate,
                     'employee_id' :  querys[i].employee_id,
                     'Name' :  querys[i].Name,
