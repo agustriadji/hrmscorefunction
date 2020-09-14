@@ -240,7 +240,7 @@ module.exports = async (data, callback) => {
                                 swap: [],
                                 hrx_comp: value.hrx_comp,
                                 supx_comp: [],
-                                empx_comp: []
+                                swapx_comp: []
                             };
                         } else {
                             master = 'schedule';
