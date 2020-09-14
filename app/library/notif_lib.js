@@ -327,11 +327,11 @@ module.exports = async (data, callback) => {
                             end = {sup: 1, hr: 0, swap: 0, hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
                                 sup: value.supx,
-                                swap: value.swapx,
+                                swap: [],
                                 hr: [],
                                 supx_comp: value.supx_comp,
                                 hrx_comp: [],
-                                swapx_comp: value.swapx_comp
+                                swapx_comp: []
                             };
                         
                     }
