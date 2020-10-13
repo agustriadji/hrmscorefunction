@@ -14,7 +14,7 @@ module.exports = function (channel, message) {
     res.logger = (channel, message) => {
 
       console.log(req.headers,55555);
-      axios.post(`http://0.0.0.0:5000/api/log/${channel}`, {
+      axios.post(`http://192.168.1.12:5000/api/log/${channel}`, {
         header: {
           info: req.headers,
           path: req.path,
