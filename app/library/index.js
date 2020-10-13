@@ -4,4 +4,5 @@ module.exports = {
     calculation: require('./calculation'),
     response: require('./response'),
     notif_leave_only: require('./notif_leave_only'),
+    logger: require('./logger'),
 }

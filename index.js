@@ -2,6 +2,7 @@
 
 const controller    = require('./app/controller');
 const path       	= require('path');
+const lib = require('./app/library');
 
 
  /* controller.calculation({
@@ -63,6 +64,7 @@ module.exports = {
       return message;
     })
   },
+  logger: lib.logger
 }
 
 
