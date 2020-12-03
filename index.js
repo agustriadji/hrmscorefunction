@@ -2,6 +2,7 @@
 
 const controller    = require('./app/controller');
 const path       	= require('path');
+const lib = require('./app/library');
 
 // 
  /* controller.calculation({
@@ -17,7 +18,19 @@ const path       	= require('path');
 
 */
 
-
+/*controller.notif_leave_only_ctrl({
+  local_it: 'local',
+  from_type: 'leave',
+  user: 'user',
+  user_login: '2010004',
+  type: 2,
+  name: '2016015',
+  from_type: 'leave',
+  swap: null
+}, message => {
+  return console.log(message);
+});
+*/
 module.exports = {
   notifLib: (req, callback)=>{
     return new Promise((resolve, reject) => {
@@ -51,6 +64,7 @@ module.exports = {
       return message;
     })
   },
+  logger: lib.logger
 }
 
 

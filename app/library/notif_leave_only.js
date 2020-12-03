@@ -167,7 +167,9 @@ module.exports = async (data, callback) => {
             (value, next) => {
                 let master, end, arr;
 
-                
+                if(!requestor && value._employee_id != value._user_login){
+                    return next(true, 500);
+                }
                 if (value._type == 2) {
                     if (value._local_it == 'local') {
                         master = 'leave';
@@ -515,6 +517,7 @@ module.exports = async (data, callback) => {
 
                     });
                 }
+                //return console.log(requestor,value._employee_id, 909090)
                 let new_arr = {
                     ...arr,
                     requestor_stat: [{[value._employee_id]: 0}],
