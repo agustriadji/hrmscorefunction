@@ -254,6 +254,11 @@ module.exports = async (data, callback) => {
                                 swapx_comp: []
                             };
                         }
+                        let index = arr.hrx_comp.findIndex((val) => val === val._employee_id);
+                        if(index > -1) {
+                            arr.hrx_comp.splice(index, 1);
+                            arr.hr.splice(index, 1);
+                        }
                     }
                     if (value._type == 3) {
                         if (value._local_it == 'local') {

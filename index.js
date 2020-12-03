@@ -3,7 +3,7 @@
 const controller    = require('./app/controller');
 const path       	= require('path');
 
-
+// 
  /* controller.calculation({
     type: 'cutoff',
     name: null,
