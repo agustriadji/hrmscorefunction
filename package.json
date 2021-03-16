@@ -1,6 +1,6 @@
 {
-    "name": "hrmscorefunction",
-    "version": "0.1.8",
+  "name": "hrmscorefunction",
+  "version": "0.1.9",
   "description": "Ini adalah kumpulan beberapa lib untuk hrms\r # Setup : \r ```\r npm i hrms_corefunction\r ```",
   "main": "index.js",
   "scripts": {
@@ -11,6 +11,8 @@
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "async": "^3.2.0",
+    "axios": "^0.21.1",
+    "ip": "^1.1.5",
     "moment": "^2.27.0",
     "mysql2": "^2.1.0"
   },
