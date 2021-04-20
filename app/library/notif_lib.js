@@ -1,8 +1,8 @@
 const async     = require('async');
 const database  = require('../connection/mysql');
 const config    = require('../config.js');
-const procedure = require('../procedure');
-const { NULL } = require('mysql2/lib/constants/types');
+// const procedure = require('../procedure');
+// const { NULL } = require('mysql2/lib/constants/types');
 
 
 module.exports = async (data, callback) => {
@@ -254,11 +254,7 @@ module.exports = async (data, callback) => {
                                 swapx_comp: []
                             };
                         }
-                        let index = arr.hrx_comp.findIndex((val) => val === val._employee_id);
-                        if(index > -1) {
-                            arr.hrx_comp.splice(index, 1);
-                            arr.hr.splice(index, 1);
-                        }
+                       
                     }
                     if (value._type == 3) {
                         if (value._local_it == 'local') {
@@ -365,6 +361,14 @@ module.exports = async (data, callback) => {
                                 };
                             
                         }
+                    }
+
+                    if (value._type == 7 || value._type == 8 || value._type == 9) {
+                        let index = arr.hrx_comp.findIndex((val) => val === value._employee_id);
+                            if(index > -1) {
+                                arr.hrx_comp.splice(index, 1);
+                                arr.hr.splice(index, 1);
+                            }
                     }
                 
                 // updated code

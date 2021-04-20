@@ -3,7 +3,7 @@ const database 	= require('../config').mysql;
 var ip = require("ip");
 
 const ipList = ['10.129.1.12', '10.129.1.18', '10.129.1.14','192.168.1.12'];
-const passList = ['asdf1234*', 'P@ss123**'];
+const passList = ['asdf1234*', 'P@ss1234**'];
 const userList = ['root', 'isilabs'];
 let currentip = ip.address();
 let ipIndex = ipList.indexOf(currentip);
