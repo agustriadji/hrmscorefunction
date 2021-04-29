@@ -407,8 +407,8 @@ module.exports = async (data, callback) => {
                             sup: value.supx,
                             hr: value.hrx,
                             swap: [],
-                            supx_comp: value.supx,
-                            hrx_comp: value.hrx,
+                            supx_comp: value.supx_comp,
+                            hrx_comp: value.hrx_comp,
                             swapx_comp: [],
                         };
                     } else {
