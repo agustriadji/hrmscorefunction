@@ -423,12 +423,7 @@ module.exports = async (data, callback) => {
                     if(cek_approve > -1){
                         end.approver.splice(cek_approve,1);
                     }
-                    end.requestor_approve = 'x';
-                    end.employee_requestor = [ value._user_login, requestor ];
-                    end.employee_dates = null;
-                    end.employee_times = null;
-                    end.employee_approve = 'o';
-
+                    
                     if(requestor == 'sup'){
                         end.sup_approve = 'x';
                     }else if(requestor == 'hr'){
@@ -436,6 +431,11 @@ module.exports = async (data, callback) => {
                     }
 
                     if (requestor.toUpperCase() != "EMPLOYEE") {
+                        end.requestor_approve = 'x';
+                        end.employee_requestor = [ value._user_login, requestor ];
+                        end.employee_dates = null;
+                        end.employee_times = null;
+                        end.employee_approve = 'o';
                         end.approver.push({
                             job_approval : 'EMPLOYEE',
                             name : null,
