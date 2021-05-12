@@ -364,10 +364,11 @@ module.exports = async (data, callback) => {
                     }
 
                     if (value._type == 7 || value._type == 8 || value._type == 9) {
-                        let index = arr.hrx_comp.findIndex((val) => val === value._employee_id);
+                        let index = arr.hrx_comp.findIndex((val) => val == value._employee_id);
                             if(index > -1) {
                                 arr.hrx_comp.splice(index, 1);
                                 arr.hr.splice(index, 1);
+                                requestor = "employee";
                             }
                     }
                 
@@ -434,14 +435,16 @@ module.exports = async (data, callback) => {
                         end.hr_approve = 'x';
                     }
 
-                    end.approver.push({
-                        job_approval : 'EMPLOYEE',
-                        name : null,
-                        date : null,
-                        time: null,
-                        status : 'Pending Approval'
-
-                    });
+                    if (requestor.toUpperCase() != "EMPLOYEE") {
+                        end.approver.push({
+                            job_approval : 'EMPLOYEE',
+                            name : null,
+                            date : null,
+                            time: null,
+                            status : 'Pending Approval'
+                            
+                        });
+                    }
                 }
                 let new_arr = {
                     ...arr,
