@@ -191,7 +191,7 @@ module.exports = async (data, callback) => {
                             // const cekSPV = value.__supervisorx.findIndex((str) =>  str.employee_id == value._user_login);
                             if(value._user_login === '2014888'){
                                 requestor = 'su';
-                            }else if(requestor != 'sup' && el.employee_id === value._user_login){
+                            }else if(requestor != 'sup' && el.employee_id === value._user_login && value._local_it.toLowerCase() == "expat" ){
                                     requestor = 'hr';
                                     const datetime = new Date().toISOString().split('T');
                                     const dates = datetime[0];
