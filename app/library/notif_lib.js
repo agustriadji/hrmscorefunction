@@ -37,12 +37,12 @@ module.exports = async (data, callback) => {
                     const _hrx =  await database.promise().query(`select employee_id from  ldap, role where ldap.role_id = role.role_id and (lower(role.role_name) like '%human%' or  '%human resource%' or '%hr%')`);
                     const _adminx =  await database.promise().query(`SELECT T1.employee_id
                                                                     FROM ldap T1
-                                                                    role T2
+                                                                    INNER JOIN \`role\` T2
                                                                     ON T1.role_id = T2.role_id 
-                                                                    LEFT JOIN emp T3
+                                                                    INNER JOIN emp T3
                                                                     ON T1.employee_id = T3.employee_id 
                                                                     WHERE lower(T2.role_name) LIKE '%admin%' 
-                                                                    AND lower(T2.role_name) NOT LIKE '%administrator%';`);
+                                                                    AND lower(T2.role_name) NOT LIKE '%administrator%'`);
                     //const _subx = await database.promise().query(`select subordinate from emp_subordinate where employee_id = '${val._employee_id}'`);
                     //const _subx = val._ids == undefined ? [] : await database.promise().query(`select swap_with from att_swap_shift where employee_id = '${val._employee_id}' and swap_id = (select request_id from att_schedule_request where employee_id='${val._employee_id}' and id = ${val._ids} and type_id = 6 order by id desc limit 1 )`);
                     
