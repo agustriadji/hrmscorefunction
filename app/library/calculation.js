@@ -869,6 +869,9 @@ module.exports = (types,  param_emp,rangeDt, job, department, localit, callback)
                     'Short' :  querys[i].Short || '-' /*(short == 0 ? short = '-' : short = short  )*/,
                     'Late' :  querys[i].Late || '-' /*(late == 0 ? late = '-' : late = late  )*/,
                     'EarlyOut' :   querys[i].EarlyOut || '-',
+                    'undertime_req' :   querys[i].undertime_req || '-',
+                    'earlyout_req' :   querys[i].earlyout_req || '-',
+                    
                     // 'between' :  between
                 })
             }
