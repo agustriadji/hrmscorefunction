@@ -871,7 +871,8 @@ module.exports = (types,  param_emp,rangeDt, job, department, localit, callback)
                     'EarlyOut' :   querys[i].EarlyOut || '-',
                     'undertime_req' :   querys[i].undertime_req || '-',
                     'earlyout_req' :   querys[i].earlyout_req || '-',
-                    
+                    'undertime_status' :   querys[i].undertime_status || '-',
+                    'earlyout_status' :   querys[i].earlyout_status || '-',
                     // 'between' :  between
                 })
             }
