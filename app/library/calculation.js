@@ -873,7 +873,8 @@ module.exports = (types,  param_emp,rangeDt, job, department, localit, callback)
                     'earlyout_req' :   querys[i].earlyout_req || '-',
                     'undertime_status' :   querys[i].undertime_status || '-',
                     'earlyout_status' :   querys[i].earlyout_status || '-',
-                    // 'between' :  between
+                    // 'between' :  between,
+                    'sch_workhours': querys[i].sch_workhours
                 })
             }
             next(null, tmp);
