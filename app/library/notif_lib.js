@@ -35,14 +35,14 @@ module.exports = async (data, callback) => {
                     const _supervisorx = await database.promise().query(`select * from emp_supervisor where employee_id =  '${val._employee_id}' `);
                     const _emp_x = await database.promise().query(`select * from view_nonactive_login where employee_id  =   '${val._employee_id}' and (lower(role_name) = 'regular employee user' or  lower(role_name) = 'user') `);
                     const _hrx =  await database.promise().query(`select employee_id from  ldap, role where ldap.role_id = role.role_id and (lower(role.role_name) like '%human%' or  '%human resource%' or '%hr%')`);
-                    const _adminx =  await database.promise().query(`SELECT T1.employee_id
-                                                                    FROM ldap T1
-                                                                    INNER JOIN \`role\` T2
-                                                                    ON T1.role_id = T2.role_id 
-                                                                    INNER JOIN emp T3
-                                                                    ON T1.employee_id = T3.employee_id 
-                                                                    WHERE lower(T2.role_name) LIKE '%admin%' 
-                                                                    AND lower(T2.role_name) NOT LIKE '%administrator%'`);
+                    // const _adminx =  await database.promise().query(`SELECT T1.employee_id
+                    //                                                 FROM ldap T1
+                    //                                                 INNER JOIN \`role\` T2
+                    //                                                 ON T1.role_id = T2.role_id 
+                    //                                                 INNER JOIN emp T3
+                    //                                                 ON T1.employee_id = T3.employee_id 
+                    //                                                 WHERE lower(T2.role_name) LIKE '%admin%' 
+                    //                                                 AND lower(T2.role_name) NOT LIKE '%administrator%'`);
                     //const _subx = await database.promise().query(`select subordinate from emp_subordinate where employee_id = '${val._employee_id}'`);
                     //const _subx = val._ids == undefined ? [] : await database.promise().query(`select swap_with from att_swap_shift where employee_id = '${val._employee_id}' and swap_id = (select request_id from att_schedule_request where employee_id='${val._employee_id}' and id = ${val._ids} and type_id = 6 order by id desc limit 1 )`);
                     
@@ -52,7 +52,7 @@ module.exports = async (data, callback) => {
                         __supervisorx: _supervisorx[0],
                         __emp_x: _emp_x[0],
                         __hrx: _hrx[0],
-                        __adminx: _adminx[0],
+                        // __adminx: _adminx[0],
                         __subx: [],
                     });
                 })();
@@ -169,61 +169,6 @@ module.exports = async (data, callback) => {
                 }
             },
             (value, next) => {
-                // console.log(value.__hrx.length, '=== OKE LUERR');
-                // return;
-                // SET ADMINX
-                let adminx  = [
-                    {
-                    "2014888": 0,
-                    "hr_stat": 0,
-                    "hr_date": "0000-00-00",
-                    "hr_time": "00:00",
-                    "read_stat": 0
-                    }
-                ];
-                let adminx_comp = ['2014888'];
-                if (value.__adminx.length > 0) {
-                    value.__adminx.map((el, index) => {
-                        let jsons = {
-                            [el.employee_id]: 0,
-                            hr_stat: 0,
-                            hr_date: '0000-00-00',
-                            hr_time: '00:00',
-                            read_stat: 0,
-                        };
-                        
-                        // updated code
-                        if(value._employee_id && value._employee_id !== value._user_login){
-                            // const cekHR = value.__hrx.findIndex((str)=> str.employee_id == value._user_login );
-                            // const cekSPV = value.__supervisorx.findIndex((str) =>  str.employee_id == value._user_login);
-                            if(value._user_login === '2014888'){
-                                requestor = 'su';
-                            }else if(requestor != 'sup' && el.employee_id === value._user_login && value._local_it.toLowerCase() == "expat" ){
-                                    requestor = 'hr';
-                                    const datetime = new Date().toISOString().split('T');
-                                    const dates = datetime[0];
-                                    const times = datetime[1].substring(0,5);
-                                    jsons = {
-                                        [el.employee_id]: 1,
-                                        hr_stat: 1,
-                                        hr_date: dates.split('T')[0],
-                                        hr_time: times,
-                                        read_stat: 1,
-                                    }
-                                
-                            }
-                        }
-                        adminx.push(jsons);
-                        adminx_comp.push(el.employee_id);
-                        if (value.__adminx.length == (index + 1)) {
-                            return next(null, { ...value, adminx: adminx, adminx_comp: adminx_comp });
-                        }
-                    });
-                } else {
-                    return next(null, { ...value, adminx: adminx, adminx_comp: adminx_comp });
-                }
-            },
-            (value, next) => {
                 // console.log(value, '=== OKE WOYy');
                 // return;
                 // SET SUBX
@@ -315,15 +260,15 @@ module.exports = async (data, callback) => {
                             master = 'schedule';
                             end = {hr: 1, swap: '0', sup: '0', hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
-                                hr: value.adminx,
+                                hr: value.hrx,
                                 sup: [],
                                 swap: [],
-                                hrx_comp: value.adminx_comp,
+                                hrx_comp: value.hrx_comp,
                                 supx_comp: [],
                                 swapx_comp: []
                             };
                         }
-                       
+                        
                     }
                     if (value._type == 3) {
                         if (value._local_it == 'local') {
@@ -456,16 +401,25 @@ module.exports = async (data, callback) => {
 
                 if(idx1 > 0){
                     
-                    if (value._type == 9 && value._local_it == 'expat') {
-                        end.approver.push({
-                            job_approval : 'ADMIN',
-                            name : null,
-                            date : null,
-                            time: null,
-                            status : 'Pending Approval'
+                    // if (value._type == 9 && value._local_it == 'expat') {
+                    //     end.approver.push({
+                    //         job_approval : 'ADMIN',
+                    //         name : null,
+                    //         date : null,
+                    //         time: null,
+                    //         status : 'Pending Approval'
     
-                        });
-                    } else {
+                    //     });
+                    // } else {
+                    //     end.approver.push({
+                    //         job_approval : 'HR',
+                    //         name : null,
+                    //         date : null,
+                    //         time: null,
+                    //         status : 'Pending Approval'
+                    //     });
+                    // }
+                    if (value._type == 9){
                         end.approver.push({
                             job_approval : 'HR',
                             name : null,
