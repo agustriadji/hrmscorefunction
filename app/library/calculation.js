@@ -874,7 +874,9 @@ module.exports = (types,  param_emp,rangeDt, job, department, localit, callback)
                     'undertime_status' :   querys[i].undertime_status || '-',
                     'earlyout_status' :   querys[i].earlyout_status || '-',
                     // 'between' :  between,
-                    'sch_workhours': querys[i].sch_workhours
+                    'sch_workhours': querys[i].sch_workhours,
+                    'undertime': querys[i].undertime || '-',
+                    'undertime_color': querys[i].undertime_color,
                 })
             }
             next(null, tmp);
