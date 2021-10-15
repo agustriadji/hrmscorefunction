@@ -401,25 +401,16 @@ module.exports = async (data, callback) => {
 
                 if(idx1 > 0){
                     
-                    // if (value._type == 9 && value._local_it == 'expat') {
-                    //     end.approver.push({
-                    //         job_approval : 'ADMIN',
-                    //         name : null,
-                    //         date : null,
-                    //         time: null,
-                    //         status : 'Pending Approval'
+                    if (value._type == 9 && value._local_it == 'expat') {
+                        end.approver.push({
+                            job_approval : 'ADMIN',
+                            name : null,
+                            date : null,
+                            time: null,
+                            status : 'Pending Approval'
     
-                    //     });
-                    // } else {
-                    //     end.approver.push({
-                    //         job_approval : 'HR',
-                    //         name : null,
-                    //         date : null,
-                    //         time: null,
-                    //         status : 'Pending Approval'
-                    //     });
-                    // }
-                    if (value._type == 9){
+                        });
+                    } else {
                         end.approver.push({
                             job_approval : 'HR',
                             name : null,
@@ -428,6 +419,15 @@ module.exports = async (data, callback) => {
                             status : 'Pending Approval'
                         });
                     }
+                    // if (value._type == 9){
+                    //     end.approver.push({
+                    //         job_approval : 'HR',
+                    //         name : null,
+                    //         date : null,
+                    //         time: null,
+                    //         status : 'Pending Approval'
+                    //     });
+                    // }
                 }
                 if(idx2 > 0){
                     
