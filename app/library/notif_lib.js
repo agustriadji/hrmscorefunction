@@ -271,7 +271,7 @@ module.exports = async (data, callback) => {
                         
                     }
                     if (value._type == 3) {
-                        if (value._local_it == 'local') {
+                        // if (value._local_it == 'local') {
                             master = 'schedule';
                             end = {sup: 1, swap: '0', hr: '0', hr_approve: 'o', swap_approve: 'o', sup_approve: 'o'};
                             arr = {
@@ -282,7 +282,7 @@ module.exports = async (data, callback) => {
                                 hrx_comp: [],
                                 swapx_comp: []
                             };
-                        }
+                        // }
                     }
                     if (value._type == 4) {
                         // if (value._local_it == 'local') {
