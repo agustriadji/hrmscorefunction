@@ -877,6 +877,7 @@ module.exports = (types,  param_emp,rangeDt, job, department, localit, callback)
                     'sch_workhours': querys[i].sch_workhours,
                     'undertime': querys[i].undertime || '-',
                     'undertime_color': querys[i].undertime_color,
+                    'ndot_status': querys[i].ndot_status,
                 })
             }
             next(null, tmp);
