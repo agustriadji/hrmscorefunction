@@ -856,6 +856,8 @@ module.exports = (types,  param_emp,rangeDt, job, department, localit, callback)
                     'workStatus' :  querys[i].WorkHours || '-',
                     'total_overtime' :  querys[i].total_overtime || '-',
                     'new_color_overtime' :  querys[i].new_color_overtime,
+                    'before_work_hours': querys[i].before_overtime,
+                    'after_work_hours': querys[i].after_overtime,
                     'overStatus' :  overStatus,
                     'status' :  status,
                     'OvertimeRestDay' :  querys[i].OvertimeRestDay || '-',
